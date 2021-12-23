@@ -41,7 +41,7 @@ WORKDIR /home/runner
 ENV STEAMAPPID 1026340
 ENV GAMEDIR "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
-# Necessary symlink for the game server.
+# Necessary symlink for SteamCMD.
 RUN set -eux \
     && mkdir -p /home/runner/Steam \
     && mkdir -p /home/runner/.steam/sdk32 \
