@@ -1,0 +1,68 @@
+############################################################
+# Dockerfile that contains the Barotrauma dedicated server.
+# SteamCMD part is inspired by: https://github.com/CM2Walki/steamcmd
+# BaroServer part is inspired by: https://github.com/gnoeley/barotrauma-dedicated-server-docker
+############################################################
+
+FROM opensuse/leap:15.4
+
+LABEL maintainer="code@yanwk.fun"
+
+# Create a low-privilege user.
+RUN set -eux \
+    && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
+    && mkdir -p /home/runner \
+    && groupadd runner \
+    && useradd runner -g runner -d /home/runner \
+    && chown runner:runner /home/runner
+
+# Install runtimes & SteamCMD.
+# When done, disable all Zypper repos.
+COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
+
+RUN zypper --gpg-auto-import-keys \
+        install --no-confirm --no-recommends --auto-agree-with-licenses \
+           libicu \
+           dotnet-runtime-3.1 \
+           libSDL2-2_0-0 \
+           steamcmd \
+    && zypper modifyrepo --disable --all
+
+# Run SteamCMD for the first time, let it update & install some files,
+# so other low-privilege users could run it properly.
+# Clear /tmp when done.
+RUN steamcmd +'quit' \
+    && rm -rf /tmp/*
+
+# Install & run the game server in a low-privilege user.
+USER runner:runner
+WORKDIR /home/runner
+
+ENV STEAMAPPID 1026340
+ENV GAMEDIR "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+
+# Necessary symlink for the game server.
+RUN set -eux \
+    && mkdir -p /home/runner/Steam \
+    && mkdir -p /home/runner/.steam/sdk32 \
+    && mkdir -p /home/runner/.steam/sdk64 \
+    && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
+    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
+
+# Note: if dir "~/.local/share" doesn't exists, the game server will try save
+# multiplayer campaign file to "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer".
+# So one VOLUME is enough for persistence.
+RUN mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+VOLUME $GAMEDIR
+
+EXPOSE 27015/udp
+EXPOSE 27016/udp
+
+# If doesn't exist, SteamCMD will install and validate the game server.
+# If exists, SteamCMD will try update it, but no validate.
+CMD if [[ -f "${GAMEDIR}/DedicatedServer" ]] ; then \
+        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
+    else \
+        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \
+    fi \
+    && "${GAMEDIR}/DedicatedServer"
