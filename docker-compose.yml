@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  barotrauma-server:
+  barotrauma-dedicated-server:
     container_name: barotrauma-server-opensuse
     ports:
       - "27015:27015/udp"

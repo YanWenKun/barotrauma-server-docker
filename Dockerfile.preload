@@ -49,6 +49,15 @@ RUN set -eux \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
     && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
 
+# Download the game server and validate.
+# Could be skipped to get smaller image size, but have to download more on first run.
+RUN steamcmd \
+        @ShutdownOnFailedCommand \
+        @NoPromptForPassword \
+        +login anonymous \
+        +app_update ${STEAMAPPID} validate \
+        +'quit'
+
 # Note: if dir "~/.local/share" doesn't exists, the game server will try save
 # multiplayer campaign file to "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer".
 # So one VOLUME is enough for persistence.
@@ -58,11 +67,6 @@ VOLUME $GAMEDIR
 EXPOSE 27015/udp
 EXPOSE 27016/udp
 
-# If doesn't exist, SteamCMD will install and validate the game server.
-# If exists, SteamCMD will try update it, but no validate.
-CMD if [[ -f "${GAMEDIR}/DedicatedServer" ]] ; then \
-        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
-    else \
-        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \
-    fi \
+# On every start, update the game server from Steam, but without validation (or config files will be overrided).
+CMD steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' \
     && "${GAMEDIR}/DedicatedServer"
