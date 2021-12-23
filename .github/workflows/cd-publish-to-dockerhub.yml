@@ -1,0 +1,32 @@
+name: Publish to Docker Hub
+
+on:
+  schedule:
+    # Publish everyday at 01:00 UTC
+    - cron: '00 1 * * *'
+  push:
+    branches: [ main ]
+    # Publish semver tags as releases.
+    tags: [ 'v*.*.*' ]
+
+
+jobs:
+
+  publish-all:
+
+    runs-on: ubuntu-latest
+    environment: Docker Hub Publish Secrets
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker images (latest)
+      run: docker build . --file Dockerfile --tag yanwk/barotrauma-server:$(date +%y%m%d) --tag yanwk/barotrauma-server:latest
+    - name: Build the Docker images (preload)
+      run: docker build . --file Dockerfile.preload --tag yanwk/barotrauma-server:$(date +%y%m%d)-preload --tag yanwk/barotrauma-server:preload
+    - name: Docker Hub Login
+      uses: docker/login-action@v1
+      with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+    - name: Push to Docker Hub
+      run: docker push yanwk/barotrauma-server
