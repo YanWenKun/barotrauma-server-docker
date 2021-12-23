@@ -1,0 +1,83 @@
+﻿<config
+  gameversion="0.15.22.0"
+  language="English"
+  masterserverurl="http://www.undertowgames.com/baromaster"
+  autocheckupdates="true"
+  musicvolume="0.3"
+  soundvolume="0.5"
+  verboselogging="false"
+  savedebugconsolelogs="false"
+  submarineautosave="true"
+  subeditorundobuffer="32"
+  maxautosaves="8"
+  autosaveintervalseconds="300"
+  subeditorbackground="13,37,69,255"
+  enablesplashscreen="true"
+  usesteammatchmaking="true"
+  quickstartsub="Humpback"
+  requiresteamauthentication="true"
+  autoupdateworkshopitems="true"
+  pauseonfocuslost="true"
+  aimassistamount="0.5"
+  enablemouselook="true"
+  radialdistortion="true"
+  chatopen="true"
+  crewmenuopen="true"
+  campaigndisclaimershown="false"
+  editordisclaimershown="false"
+  tutorialskipwarning="true"
+  corpsedespawndelay="600"
+  corpsespersubdespawnthreshold="5"
+  usedualmodesockets="true"
+  disableingamehints="false">
+  <graphicsmode
+    displaymode="BorderlessWindowed" />
+  <audio
+    musicvolume="0.3"
+    soundvolume="0.5"
+    voicechatvolume="0.5"
+    voicechatcutoffprevention="0"
+    microphonevolume="5"
+    muteonfocuslost="false"
+    dynamicrangecompressionenabled="true"
+    voipattenuationenabled="true"
+    usedirectionalvoicechat="true"
+    voicesetting="Disabled"
+    audiooutputdevice=""
+    voicecapturedevice=""
+    noisegatethreshold="-45"
+    uselocalvoicebydefault="false" />
+  <graphicssettings
+    particlelimit="1500"
+    lightmapscale="1"
+    chromaticaberration="true"
+    losmode="Transparent"
+    hudscale="1"
+    inventoryscale="1"
+    textscale="1" />
+  <contentpackages>
+    <core
+      name="Vanilla 0.9" />
+    <regular />
+  </contentpackages>
+  <gameplay>
+    <jobpreferences />
+  </gameplay>
+  <player
+    name=""
+    headindex="1"
+    hairindex="-1"
+    beardindex="-1"
+    moustacheindex="-1"
+    faceattachmentindex="-1"
+    skincolor="0,0,0,255"
+    haircolor="0,0,0,255"
+    facialhaircolor="0,0,0,255" />
+  <tutorials />
+  <ignoredhints
+    identifiers="" />
+  <encountered
+    creatures="" />
+  <killed
+    creatures="" />
+</config>
