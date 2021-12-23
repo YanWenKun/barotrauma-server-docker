@@ -67,6 +67,6 @@ VOLUME $GAMEDIR
 EXPOSE 27015/udp
 EXPOSE 27016/udp
 
-# On every start, update the game server from Steam, but without validation (or config files will be overrided).
+# On every start, update the game server from Steam, but without validation (or config files will be replaced).
 CMD steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' \
     && "${GAMEDIR}/DedicatedServer"

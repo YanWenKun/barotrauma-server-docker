@@ -59,7 +59,7 @@ EXPOSE 27015/udp
 EXPOSE 27016/udp
 
 # If the executable file doesn't exist, SteamCMD will download, install and validate the server.
-# If exists, SteamCMD will try to update the server, but without validation (or config files will be overrided).
+# If exists, SteamCMD will try to update the server, but without validation (or config files will be replaced).
 CMD if [[ -f "${GAMEDIR}/DedicatedServer" ]] ; then \
         steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
     else \
