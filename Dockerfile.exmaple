@@ -1,0 +1,65 @@
+############################################################
+# Example Dockerfile that contains a dedicated game server
+# with SteamCMD.
+############################################################
+
+FROM opensuse/leap:15.4
+
+LABEL maintainer="code@yanwk.fun"
+
+# Create a low-privilege user.
+RUN set -eux \
+    && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
+    && mkdir -p /home/runner \
+    && groupadd runner \
+    && useradd runner -g runner -d /home/runner \
+    && chown runner:runner /home/runner
+
+# Install runtimes & SteamCMD.
+# When done, disable all Zypper repos.
+RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
+        libSDL2-2_0-0 \
+        steamcmd \
+    && zypper modifyrepo --disable --all
+
+# Run SteamCMD for the first time, let it update & install some files,
+# so other low-privilege users could run it properly.
+# Clear /tmp when done.
+RUN steamcmd +'quit' \
+    && rm -rf /tmp/*
+
+# Install & run the game server in a low-privilege user.
+USER runner:runner
+WORKDIR /home/runner
+
+ENV STEAMAPPID 1007
+ENV GAMEDIR "/home/runner/Steam/steamapps/common/Steamworks SDK Redist"
+
+# Necessary symlink for SteamCMD.
+RUN set -eux \
+    && mkdir -p /home/runner/Steam \
+    && mkdir -p /home/runner/.steam/sdk32 \
+    && mkdir -p /home/runner/.steam/sdk64 \
+    && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
+    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
+
+# Download the game server and validate.
+# Could be skipped for smaller image size, but have to download more on first run.
+RUN steamcmd \
+        @ShutdownOnFailedCommand \
+        @NoPromptForPassword \
+        +login anonymous \
+        +app_update ${STEAMAPPID} validate \
+        +'quit'
+
+# Mount whole game server folder as persistence.
+# Could be optimized if the game server is data-program separated.
+VOLUME $GAMEDIR
+
+# "EXPOSE" does not actually publish the port, it informs container which port needs to.
+EXPOSE 8080/tcp
+EXPOSE 8081/tcp
+
+# On every start, update the game server from Steam, but no validate.
+CMD steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' \
+    && "${GAMEDIR}/DedicatedServerApp"
