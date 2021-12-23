@@ -35,31 +35,29 @@ WORKDIR /home/runner
 ENV STEAMAPPID 1007
 ENV GAMEDIR "/home/runner/Steam/steamapps/common/Steamworks SDK Redist"
 
-# Necessary symlink for SteamCMD.
+# Make directory before mount volume (or it will be root-owned).
+# Make necessary symlink for SteamCMD.
 RUN set -eux \
+    && mkdir -p "${GAMEDIR}" \
     && mkdir -p /home/runner/Steam \
     && mkdir -p /home/runner/.steam/sdk32 \
     && mkdir -p /home/runner/.steam/sdk64 \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
     && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
 
-# Download the game server and validate.
-# Could be skipped for smaller image size, but have to download more on first run.
-RUN steamcmd \
-        @ShutdownOnFailedCommand \
-        @NoPromptForPassword \
-        +login anonymous \
-        +app_update ${STEAMAPPID} validate \
-        +'quit'
-
 # Mount whole game server folder as persistence.
-# Could be optimized if the game server is data-program separated.
+# Could be optimized if the game server is data-program separated, but needs redesign.
 VOLUME $GAMEDIR
 
 # "EXPOSE" does not actually publish the port, it informs container which port needs to.
 EXPOSE 8080/tcp
 EXPOSE 8081/tcp
 
-# On every start, update the game server from Steam, but no validate.
-CMD steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' \
+# If the executable file doesn't exist, SteamCMD will download, install and validate the server.
+# If exists, SteamCMD will try to update the server, but without validation (or changed files will be overrided).
+CMD if [[ -f "${GAMEDIR}/DedicatedServerApp" ]] ; then \
+        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
+    else \
+        steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \
+    fi \
     && "${GAMEDIR}/DedicatedServerApp"
