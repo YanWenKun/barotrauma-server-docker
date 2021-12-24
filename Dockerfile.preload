@@ -58,17 +58,17 @@ RUN steamcmd \
         +app_update ${STEAMAPPID} validate \
         +'quit'
 
-# Preload files
+# Preload files from this git repository.
 ENV SAVEDIR "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
 RUN mkdir -p "${SAVEDIR}"
-COPY preloads/configs/serversettings.xml    ${GAMEDIR}/serversettings.xml
-COPY preloads/configs/config_player.xml     ${GAMEDIR}/config_player.xml
-COPY preloads/configs/clientpermissions.xml ${GAMEDIR}/Data/clientpermissions.xml
-COPY preloads/configs/karmasettings.xml     ${GAMEDIR}/Data/karmasettings.xml
+COPY --chown=runner:runner preloads/configs/serversettings.xml    ${GAMEDIR}/serversettings.xml
+COPY --chown=runner:runner preloads/configs/config_player.xml     ${GAMEDIR}/config_player.xml
+COPY --chown=runner:runner preloads/configs/clientpermissions.xml ${GAMEDIR}/Data/clientpermissions.xml
+COPY --chown=runner:runner preloads/configs/karmasettings.xml     ${GAMEDIR}/Data/karmasettings.xml
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
-COPY preloads/submarines/. "${GAMEDIR}/Submarines/"
-COPY preloads/multiplayer-saves/. "${SAVEDIR}/"
-COPY preloads/mods/. "${GAMEDIR}/Mods/"
+COPY --chown=runner:runner preloads/submarines/. "${GAMEDIR}/Submarines/"
+COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEDIR}/"
+COPY --chown=runner:runner preloads/mods/. "${GAMEDIR}/Mods/"
 
 VOLUME $GAMEDIR
 
