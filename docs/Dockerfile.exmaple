@@ -7,14 +7,6 @@ FROM opensuse/leap:15.4
 
 LABEL maintainer="code@yanwk.fun"
 
-# Create a low-privilege user.
-RUN set -eux \
-    && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
-    && mkdir -p /home/runner \
-    && groupadd runner \
-    && useradd runner -g runner -d /home/runner \
-    && chown runner:runner /home/runner
-
 # Install runtimes & SteamCMD.
 # When done, disable all Zypper repos.
 RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
@@ -28,7 +20,14 @@ RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
 RUN steamcmd +'quit' \
     && rm -rf /tmp/*
 
-# Install & run the game server in a low-privilege user.
+# Create a low-privilege user.
+RUN set -eux \
+    && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
+    && mkdir -p /home/runner \
+    && groupadd runner \
+    && useradd runner -g runner -d /home/runner \
+    && chown runner:runner /home/runner
+
 USER runner:runner
 WORKDIR /home/runner
 
