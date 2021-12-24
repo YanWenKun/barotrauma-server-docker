@@ -6,8 +6,6 @@ on:
     - cron: '00 1 * * *'
   push:
     branches: [ main ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
 
 
 jobs:

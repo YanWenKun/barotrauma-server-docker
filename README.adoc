@@ -138,6 +138,8 @@ Finally, restart the server in order for your changes to take effect.
 
 If you chekced "public server", you could see it on the list now.
 
+Also, if you need to update the server, just restart it.
+
 ## Alternative: the `preload` version
 
 This version of Docker image came with pre-downloaded _Barotrauma Dedicated Server_.
@@ -232,4 +234,5 @@ Check link:Dockerfile.exmaple[Dockerfile.exmaple].
 * It's a minimal Dockerfile.
 * Try replacing `$STEAMAPPID`, `$GAMEDIR` and `DedicatedServerApp`. 
 * Try add deps, runtimes.
-* It probably not that easy, much more work expected.
+* You can refer to link:Dockerfile[Dockerfile]
+and link:Dockerfile.preload[Dockerfile.preload].
