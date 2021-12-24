@@ -8,14 +8,14 @@ on:
 
 jobs:
 
-  build-latest:
+  build-slim:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image (latest)
-      run: docker build . --file Dockerfile --tag yanwk/barotrauma-server:$(date +%y%m%d) --tag yanwk/barotrauma-server:latest
+    - name: Build the Docker image (slim)
+      run: docker build . --file Dockerfile.slim
 
   build-preload:
 
@@ -24,4 +24,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image (preload)
-      run: docker build . --file Dockerfile.preload --tag yanwk/barotrauma-server:$(date +%y%m%d)-preload --tag yanwk/barotrauma-server:preload
+      run: docker build . --file Dockerfile.preload

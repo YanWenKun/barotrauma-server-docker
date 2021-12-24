@@ -1,12 +1,12 @@
-name: Publish to Docker Hub
+name: Publish preload tag to Docker Hub
 
 on:
   schedule:
-    # Publish everyday at 01:00 UTC
-    - cron: '00 1 * * *'
+    # Publish every 8 hours
+    - cron: '00 */8 * * *'
   push:
+    # Publish on every push to main branch
     branches: [ main ]
-
 
 jobs:
 
@@ -17,10 +17,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker images (latest)
-      run: docker build . --file Dockerfile --tag yanwk/barotrauma-server:$(date +%y%m%d) --tag yanwk/barotrauma-server:latest
     - name: Build the Docker images (preload)
-      run: docker build . --file Dockerfile.preload --tag yanwk/barotrauma-server:$(date +%y%m%d)-preload --tag yanwk/barotrauma-server:preload
+      run: docker build . --file Dockerfile.preload --tag yanwk/barotrauma-server:preload --tag yanwk/barotrauma-server:preload-$(date +%Y%m%d%H%M)
     - name: Docker Hub Login
       uses: docker/login-action@v1
       with:

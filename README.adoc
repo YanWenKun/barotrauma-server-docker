@@ -32,18 +32,18 @@ And without much effort you can make it working properly. Hence the idea of this
 [source,sh]
 ----
 docker run \
-  --name barotrauma-server-opensuse \
+  --name barotrauma-server-slim \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
-  yanwk/barotrauma-server:latest
+  yanwk/barotrauma-server:slim
 ----
 
 .B. Using `docker compose`
 [source,sh]
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
-docker compose up
+docker compose -f docker-compose.slim.yml up
 ----
 
 * If everything goes well, the log will show "Server started".
@@ -131,10 +131,10 @@ You could in theory just replace `config_player.xml` with your own. Other settin
 Finally, restart the server in order for your changes to take effect.
 
 .A. Using `docker restart`
- docker restart barotrauma-server-opensuse
+ docker restart barotrauma-server-slim
 
 .B. Using `docker compose`
- docker compose restart
+ docker compose -f docker-compose.slim.yml restart
 
 If you chekced "public server", you could see it on the list now.
 
@@ -153,7 +153,7 @@ It's suitable for situation like:
 [source,sh]
 ----
 docker run \
-  --name barotrauma-server-preloaded-opensuse \
+  --name barotrauma-server-preloaded \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
@@ -215,13 +215,13 @@ Since the Dockerfile here is using CMD as entry, you can easily override it, lik
 [source,sh]
 ----
 docker run \
-  --name barotrauma-server-opensuse \
+  --name barotrauma-env-barebone \
   -it \
   --user root \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
-  yanwk/barotrauma-server:latest \
+  yanwk/barotrauma-server:slim \
   /bin/bash
 ----
 
@@ -229,10 +229,10 @@ This will start a container in root bash without starting the server.
 
 ## Extra: An example Dockerfile for game-server using SteamCMD
 
-Check link:Dockerfile.exmaple[Dockerfile.exmaple].
+Check link:docs/Dockerfile.exmaple[Dockerfile.exmaple].
 
 * It's a minimal Dockerfile.
 * Try replacing `$STEAMAPPID`, `$GAMEDIR` and `DedicatedServerApp`. 
 * Try add deps, runtimes.
-* You can refer to link:Dockerfile[Dockerfile]
+* You can refer to link:Dockerfile.slim[Dockerfile.slim]
 and link:Dockerfile.preload[Dockerfile.preload].

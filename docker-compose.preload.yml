@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   barotrauma-dedicated-server:
-    container_name: barotrauma-preloaded-server-opensuse
+    container_name: barotrauma-server-preloaded
     ports:
       - "27015:27015/udp"
       - "27016:27016/udp"

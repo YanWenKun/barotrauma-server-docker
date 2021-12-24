@@ -1,7 +1,7 @@
 version: "3.3"
 services:
   barotrauma-dedicated-server:
-    container_name: barotrauma-server-opensuse
+    container_name: barotrauma-server-slim
     ports:
       - "27015:27015/udp"
       - "27016:27016/udp"
@@ -9,7 +9,7 @@ services:
       - "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
     build:
       context: .
-      dockerfile: Dockerfile
-    image: "yanwk/barotrauma-server:latest"
+      dockerfile: Dockerfile.slim
+    image: "yanwk/barotrauma-server:slim"
 volumes:
   baro-gamedir:
