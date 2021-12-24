@@ -1,0 +1,235 @@
+# Dockerfile that contains Barotrauma Dedicated Server.
+
+This repo is inspired by https://github.com/CM2Walki/steamcmd[CM2Walki/steamcmd] 
+and https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley/barotrauma-dedicated-server-docker], with a different approach.
+
+The container will run in a "Not Dockerful" way.
+
+* The whole server app folder is mounted as a volume (persistence).
+** So you can add whatever mods, submarines and saves you like. Restart/redeploy of container won't replace your file.
+** Update is not performed by replacing image, but via startup script.
+* It won't take env variables as startup arguments. You'll have to prepare config files of your own.
+** If you can't access your container's volume, there is a way to <<build-your-own, build your own pre-loaded image>>.
+
+## Why?
+
+*_Barotrauma Dedicated Server_* is basically a core version of the game, without assets like images and sounds.
+The game is data-program mixed, so is the server, which makes "Dockerful" deployment a bit painful.
+
+But as the server uses the same directory structure as the game, it's pretty easy to copy & paste your settings, mods, submarines and saves to your server.
+And without much effort you can make it working properly. Hence the idea of this Docker image.
+
+## How to use - step by step
+
+### 1. Check your server environment
+
+* Make sure you can access your container's volume, or file system.
+** If not, check <<build-your-own,Build your own pre-loaded version>>.
+
+### 2. Run the server once
+
+.A. Using `docker run`
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-opensuse \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  yanwk/barotrauma-server:latest
+----
+
+.B. Using `docker compose`
+[source,sh]
+----
+git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+docker compose up
+----
+
+* If everything goes well, the log will show "Server started".
+* For now, we can connect the server via IP address.
+** Make sure `27015/udp` & `27016/udp` is open.
+
+[[prepare-your-files]]
+### 3. Prepare your files
+
+1. Run Barotrauma on **your computer**, enable all mods you want.
+2. Create a server, assume it's the dedicated server, tweak settings:
+  password and public visibility, friendly fire and karma...
+  * You can leave some settings for later. You will have the same permission as you have now.
+  * You don't need to actual start a round, settings will immediately write to file.
+3. When done, open the game folder (e.g. Steam\steamapps\common\Barotrauma). Find these files:
+
+.Main settings for server
+ serversettings.xml
+
+.All player-settings, we only need language and mods settings in it.
+ config_player.xml
+
+.Client permissions, mark you as the owner.
+ Data/clientpermissions.xml
+
+.Karma settings, don't need if not changed.
+ Data/karmasettings.xml
+
+Addtionally, you may want to copy:
+
+.Submarine files
+ Submarines/MY-SUPER-DUPER-POWERSUB.sub
+
+.Mods folder
+ Mods/
+
+.Multiplayer campaign saves
+----
+# on Windows
+"%localappdata%\Daedalic Entertainment GmbH\Barotrauma\Multiplayer"
+
+# on macOS / Linux
+"~/.local/share/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+----
+
+TIP: You could also https://ignis05.github.io/baro-save-editor/[conver a singleplayer campaign to multiplayer].
+
+### 4. Upload your files
+
+Upload & replace the files mentioned above.
+You can find them in docker volume or:
+
+ "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+ "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+
+But one file needs attention:
+
+ config_player.xml
+
+We only need language setting (affect bots chat, outpost names, server log, etc):
+
+ language="English"
+
+and mods settings:
+
+[source,xml]
+----
+  <contentpackages>
+    <core
+      name="Vanilla 0.9" />
+    <regular>
+      <package
+        name="Holiday Oceanic"
+        enabled="true" />
+      <package
+        name="Dayu" />
+    </regular>
+  </contentpackages>
+----
+
+You could in theory just replace `config_player.xml` with your own. Other settings (graphics, sounds) may not have effect on server. However it's better avoid doing that.
+
+### 5. Restart the server
+
+Finally, restart the server in order for your changes to take effect.
+
+.A. Using `docker restart`
+ docker restart barotrauma-server-opensuse
+
+.B. Using `docker compose`
+ docker compose restart
+
+If you chekced "public server", you could see it on the list now.
+
+## Alternative: the `preload` version
+
+This version of Docker image came with pre-downloaded _Barotrauma Dedicated Server_.
+Yet it still uses a volume to mount the whole server folder, which wastes few hundred megebytes of storage space.
+It's suitable for situation like:
+
+ * Your server connection to Steam CDN is slow, 
+ but fast to Docker Hub / repository proxy.
+
+.A. Using `docker run`
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-preloaded-opensuse \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  yanwk/barotrauma-server:preload
+----
+
+.B. Using `docker compose`
+[source,sh]
+----
+git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+docker compose --file docker-compose.preload.yml up
+----
+
+[[build-your-own]]
+## Advanced: Build your own pre-loaded version
+
+In this ultimate way, you build your own docker image pre-loaded with all settings, mods, submarines and saves.
+This could be useful if you don't have access to your container's volume. But you still need to find a way to backup your saves.
+
+NOTE: Update files in docker image won't affect volume. If you need to update mods on server frequently, you may want to edit Dockerfile.preload to meet your own needs.
+
+1. Clone this repo
+
+ git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+
+2. <<prepare-your-files,Prepare your files>>.
+
+3. Replace the files in link:preloads/[preloads/]
+
+4. Build & Run
+
+A. Using `docker compose` (edit `docker-compose.preload.yml`)
+
+ docker compose --file docker-compose.preload.yml up --build
+
+B. Using `docker build`
+
+[source,sh]
+----
+docker build . -f Dockerfile.preload \
+  -t my-baro-server:$(date +%y%m%d) \
+  -t my-baro-server:latest
+----
+
+[source,sh]
+----
+docker run \
+  --name my-barotrauma-server \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  my-baro-server
+----
+
+## Advanced: Run without server start
+
+Since the Dockerfile here is using CMD as entry, you can easily override it, like:
+
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-opensuse \
+  -it \
+  --user root \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  yanwk/barotrauma-server:latest \
+  /bin/bash
+----
+
+This will start a container in root bash without starting the server.
+
+## Extra: An example Dockerfile for game-server using SteamCMD
+
+Check link:Dockerfile.exmaple[Dockerfile.exmaple].
+
+* It's a minimal Dockerfile.
+* Try replacing `$STEAMAPPID`, `$GAMEDIR` and `DedicatedServerApp`. 
+* Try add deps, runtimes.
+* It probably not that easy, much more work expected.
