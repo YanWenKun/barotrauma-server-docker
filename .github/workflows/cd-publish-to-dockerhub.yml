@@ -15,7 +15,7 @@ jobs:
   publish-all:
 
     runs-on: ubuntu-latest
-    environment: Docker Hub Publish Secrets
+    environment: Publish to Docker Hub
 
     steps:
     - uses: actions/checkout@v2
@@ -29,4 +29,4 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
     - name: Push to Docker Hub
-      run: docker push --all-tags
+      run: docker push yanwk/barotrauma-server --all-tags
