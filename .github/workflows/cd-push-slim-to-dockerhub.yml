@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker images (slim)
-      run: docker build . --file Dockerfile.slim --tag yanwk/barotrauma-server:slim --tag yanwk/barotrauma-server:slim-$(date +%Y%m%d%H%M)
+      run: docker build . --file Dockerfile.slim --tag yanwk/barotrauma-server:slim --tag yanwk/barotrauma-server:slim-$(date +%Y%m%d)
     - name: Docker Hub Login
       uses: docker/login-action@v1
       with:

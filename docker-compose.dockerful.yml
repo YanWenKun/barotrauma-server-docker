@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  barotrauma-dedicated-server:
+    container_name: barotrauma-server-dockerful
+    ports:
+      - "27015:27015/udp"
+      - "27016:27016/udp"
+    volumes:
+      - "baro-data:/persistence"
+    build:
+      context: .
+      dockerfile: Dockerfile.dockerful
+    image: "yanwk/barotrauma-server:dockerful"
+volumes:
+  baro-data:
