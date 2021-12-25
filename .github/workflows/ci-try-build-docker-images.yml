@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image (slim)
+    - name: Build Docker image (slim)
       run: docker build . --file Dockerfile.slim
 
   build-preload:
@@ -23,5 +23,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image (preload)
+    - name: Build Docker image (preload)
       run: docker build . --file Dockerfile.preload
+
+  build-dockerful:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Docker image (dockerful)
+      run: docker build . --file Dockerfile.dockerful
