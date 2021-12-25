@@ -9,29 +9,26 @@ FROM opensuse/leap:15.4
 LABEL maintainer="code@yanwk.fun"
 
 # Create a low-privilege user.
+# Install .NET runtime & SteamCMD.
+# Disable all Zypper repos.
+# Run SteamCMD for the first time, let it update.
+# Clear /tmp when done.
 RUN set -eux \
     && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
     && mkdir -p /home/runner \
     && groupadd runner \
     && useradd runner -g runner -d /home/runner \
-    && chown runner:runner /home/runner
-
-# Install runtimes & SteamCMD.
-# When done, disable all Zypper repos.
-COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
-
-RUN zypper --gpg-auto-import-keys \
+    && chown runner:runner /home/runner \
+    && sh -c 'echo -e "[packages-microsoft-com-prod]\nname=packages-microsoft-com-prod\nbaseurl=https://packages.microsoft.com/opensuse/15/prod/\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" \
+        > /etc/zypp/repos.d/microsoft-prod.repo' \
+    && zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
            libicu \
            dotnet-runtime-3.1 \
            libSDL2-2_0-0 \
            steamcmd \
-    && zypper modifyrepo --disable --all
-
-# Run SteamCMD for the first time, let it update & install some files,
-# so other low-privilege users could run it properly.
-# Clear /tmp when done.
-RUN steamcmd +'quit' \
+    && zypper modifyrepo --disable --all \
+    && steamcmd +'quit' \
     && rm -rf /tmp/*
 
 # Install & run the game server in a low-privilege user.
