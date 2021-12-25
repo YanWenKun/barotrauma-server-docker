@@ -90,7 +90,10 @@ COPY --chown=runner:runner preloads/submarines/. "${GAMEPATH}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEPATH}/"
 COPY --chown=runner:runner preloads/mods/. "${GAMEPATH}/Mods/"
 
+# hack to solve "failed to create image" CI/CD problem
+RUN true
 COPY --chown=runner:runner resources/dockerful-entry.sh "${ENTRYSCRIPT}"
+RUN true
 COPY --chown=runner:runner resources/template_clientpermissions.xml ${SCRIPTPATH}/template_clientpermissions.xml
 RUN chmod 500 "${ENTRYSCRIPT}"
 
