@@ -1,0 +1,116 @@
+################################################################################
+# Dockerfile that contains the Barotrauma dedicated server.
+# Stage 1: Download the server using SteamCMD
+# Stage 2: Put the server in a clean environment.
+################################################################################
+
+FROM opensuse/leap:15.4 AS stage1
+
+LABEL maintainer="code@yanwk.fun"
+
+# Install SteamCMD.
+# When done, disable all Zypper repos.
+RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
+        steamcmd \
+    && zypper modifyrepo --disable --all
+
+# Run SteamCMD for the first time, let it update & install some files. Docker will cache a layer.
+RUN steamcmd +'quit'
+
+ENV STEAMAPPID 1026340
+ENV DLPATH /download
+
+# Download the game server and validate.
+RUN mkdir -p ${DLPATH} \
+    && steamcmd \
+        @ShutdownOnFailedCommand \
+        @NoPromptForPassword \
+        +force_install_dir ${DLPATH} \
+        +login anonymous \
+        +app_update $STEAMAPPID validate \
+        +'quit'
+
+# Copy essential libs
+RUN set -eux \
+    && mkdir -p ${DLPATH}/.steam/sdk32 \
+    && mkdir -p ${DLPATH}/.steam/sdk64 \
+    && cp /usr/lib/steamcmd/linux32/steamclient.so ${DLPATH}/.steam/sdk32/steamclient.so \
+    && cp /usr/lib/steamcmd/linux64/steamclient.so ${DLPATH}/.steam/sdk64/steamclient.so \
+    && cp -n /usr/lib/steamcmd/linux64/steamclient.so ${DLPATH}/steamclient.so
+
+################################################################################
+
+FROM opensuse/leap:15.4 AS stage2
+
+LABEL maintainer="code@yanwk.fun"
+
+# Install runtimes.
+# When done, disable all Zypper repos.
+COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
+
+RUN zypper --gpg-auto-import-keys \
+        install --no-confirm --no-recommends --auto-agree-with-licenses \
+            libSDL2-2_0-0 \
+            libicu \
+            dotnet-runtime-3.1 \
+    && zypper modifyrepo --disable --all
+
+ENV DLPATH /download
+ENV GAMEPATH /workload
+ENV SAVEPATH "${GAMEPATH}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+ENV SCRIPTPATH ${GAMEPATH}/scripts
+ENV ENTRYSCRIPT ${SCRIPTPATH}/dockerful-entry.sh
+ENV MOUNTPATH /persistence
+
+# Create a low-privilege user to run the server.
+# It's a hack to use /workload as $HOME, so we don't need to copy <steamclient.so> again.
+RUN set -eux \
+    && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
+    && mkdir -p ${GAMEPATH} "${SAVEPATH}" ${SCRIPTPATH} ${MOUNTPATH}\
+    && groupadd runner \
+    && useradd runner -g runner -d ${GAMEPATH} \
+    && chown -R runner:runner ${GAMEPATH} "${SAVEPATH}" ${SCRIPTPATH} ${MOUNTPATH}
+
+USER runner:runner
+WORKDIR ${GAMEPATH}
+
+# COPY server files from last stage
+COPY --from=stage1 --chown=runner:runner ${DLPATH} ${GAMEPATH}
+
+# Preload files from this git repository.
+# COPY from Windows will chmod 777, *nix respect original modes.
+COPY --chown=runner:runner preloads/configs/serversettings.xml    ${GAMEPATH}/serversettings.xml
+COPY --chown=runner:runner preloads/configs/config_player.xml     ${GAMEPATH}/config_player.xml
+COPY --chown=runner:runner preloads/configs/clientpermissions.xml ${GAMEPATH}/Data/clientpermissions.xml
+COPY --chown=runner:runner preloads/configs/karmasettings.xml     ${GAMEPATH}/Data/karmasettings.xml
+# These COPY instructions work in add/replace mode, and respect subfolder structure.
+COPY --chown=runner:runner preloads/submarines/. "${GAMEPATH}/Submarines/"
+COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEPATH}/"
+COPY --chown=runner:runner preloads/mods/. "${GAMEPATH}/Mods/"
+
+COPY --chown=runner:runner resources/dockerful-entry.sh "${ENTRYSCRIPT}"
+COPY --chown=runner:runner resources/template_clientpermissions.xml ${SCRIPTPATH}/template_clientpermissions.xml
+RUN chmod 500 "${ENTRYSCRIPT}"
+
+# Default settings for first start
+ENV DEFAULT_SERVERNAME= \
+    DEFAULT_PASSWORD= \
+    DEFAULT_PUBLICITY= \
+    DEFAULT_LANGUAGE= \
+    DEFAULT_OWNER_STEAMNAME= \
+    DEFAULT_OWNER_STEAMID=
+
+# Forcing update settings
+ENV FORCE_SERVERNAME= \
+    FORCE_PASSWORD= \
+    FORCE_PUBLICITY= \
+    FORCE_LANGUAGE= \
+    FORCE_OWNER_STEAMNAME= \
+    FORCE_OWNER_STEAMID=
+
+VOLUME [ "${MOUNTPATH}" ]
+
+EXPOSE 27015/udp
+EXPOSE 27016/udp
+
+CMD [ "sh", "-c", "${ENTRYSCRIPT}" ]
