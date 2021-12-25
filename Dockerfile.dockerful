@@ -76,6 +76,8 @@ WORKDIR ${GAMEPATH}
 
 # COPY server files from last stage
 COPY --from=stage1 --chown=runner:runner ${DLPATH} ${GAMEPATH}
+# Clear ExampleMod
+RUN rm -rf "${GAMEPATH}/Mods/*"
 
 # Preload files from this git repository.
 # COPY from Windows will chmod 777, *nix respect original modes.

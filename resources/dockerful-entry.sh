@@ -80,7 +80,7 @@ fi ;
 if [ ! -f "${MNT_CLIENTPERM}" ] ; then
     echo "Creating new <clientpermissions.xml>."
     if [ -n "${DEFAULT_OWNER_STEAMNAME}" ] && [ -n "${DEFAULT_OWNER_STEAMID}" ] ; then
-        echo "Both DEFAULT_OWNER_STEAMNAME and DEFAULT_OWNER_STEAMID are set, changing in-game server admin."
+        echo "DEFAULT_OWNER_STEAMNAME and DEFAULT_OWNER_STEAMID are both set, changing in-game server admin."
         cp "${TMPL_CLIENTPERM}" "${MNT_CLIENTPERM}"
         sed -i "s/name=BARO_OWNER_STEAMNAME/name=\"${DEFAULT_OWNER_STEAMNAME}\"/"   "${MNT_CLIENTPERM}"
         sed -i "s/steamid=BARO_OWNER_STEAMID/steamid=\"${DEFAULT_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"
@@ -90,7 +90,7 @@ if [ ! -f "${MNT_CLIENTPERM}" ] ; then
 fi ;
 
 if [ -n "${FORCE_OWNER_STEAMNAME}" ] && [ -n "${FORCE_OWNER_STEAMID}" ] ; then
-    echo "Both FORCE_OWNER_STEAMNAME and FORCE_OWNER_STEAMID are set, changing in-game server admin."
+    echo "FORCE_OWNER_STEAMNAME and FORCE_OWNER_STEAMID are both set, changing in-game server admin."
     cp "${TMPL_CLIENTPERM}" "${MNT_CLIENTPERM}"
     sed -i "s/name=BARO_OWNER_STEAMNAME/name=\"${FORCE_OWNER_STEAMNAME}\"/"   "${MNT_CLIENTPERM}"
     sed -i "s/steamid=BARO_OWNER_STEAMID/steamid=\"${FORCE_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"

@@ -2,7 +2,7 @@
 
 **[READ THE FULL DOCUMENT ON GITHUB](https://github.com/YanWenKun/barotrauma-server-docker)**
 
-**[中文文档在 GITHUB 上](https://github.com/YanWenKun/barotrauma-server-docker)**
+**[中文文档在 GITHUB 上](https://github.com/YanWenKun/barotrauma-server-docker/blob/main/README.zh.adoc)**
 
 - [`slim`](https://github.com/YanWenKun/barotrauma-server-docker/blob/main/Dockerfile.slim)
 flavor will download & install the game server on first run. Will try update on following starts.

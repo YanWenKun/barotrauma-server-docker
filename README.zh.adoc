@@ -1,0 +1,378 @@
+# 《潜渊症》独立服务器 Docker 镜像
+
+受 https://github.com/CM2Walki/steamcmd[CM2Walki] 
+与 https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley] 启发，但是换了个思路。
+
+针对使用场景不同，分了三种风格，按需选择：
+
+* <<how-to-run-slim-flavor,`slim`>> 走复古运维风格：
+** 仅包含基本的运行环境，相当于一台刚安装了 Steam 的电脑
+** 第一次启动时由 SteamCMD 自动下载安装游戏服务器
+** 遇到游戏版本更新，重启容器即可，SteamCMD 会执行更新，不用关心 Docker 镜像
+** 整个程序目录都映射到持久化存储，方便编辑房间文件（设置、存档、潜艇文件、Mod）
+** 虽然“这也太不容器范儿了”，但却是最简单无脑、灵活方便的选择，只要能访问存储目录就行
+
+* <<how-to-run-preload-flavor,`preload`>> 跟 `slim` 差不多，但提前安装了游戏服务器文件
+** 此外，如果你会构建 Docker 镜像，还可以提前把房间文件打包到镜像中，省去在服务器上操作（见 <<build-your-own,构建指南>>）
+
+* <<how-to-run-dockerful-flavor,`dockerful`>> 是经过魔改后的“容器风格”
+** 没有 SteamCMD，版本更新依靠 Docker 镜像更新
+** 对需要持久化存储的房间文件做了单独的映射
+** 支持使用容器的环境变量来设置服务器名称、密码、房主、是否公开
+** 支持像 `preload` 一样提前把房间文件打包到镜像中
+
+## 还是没理解？
+
+之所以这么折腾，是因为这游戏多人联机时，所有人的 Mod 需要同步开启，确切的说是和房主同步，存档和潜艇文件也是由房主提供。
+
+而在独立服务器上，服务器本身就成了“房主”，如果你想要和小伙伴们一起开 Mod，就需要把 Mod 文件传到服务器上，然后编辑设置文件启用（你可能想到了 SteamCMD，但那玩意 https://barotraumagame.com/wiki/Enabling_Mods_on_a_Dedicated_Server[指望不上]）。
+
+于是麻烦来了：
+
+* 设置文件是在程序目录下，和服务器程序混在一起的。
+
+** 如果你翻阅《潜渊症独立服务器》的安装目录，会发现它和《潜渊症》游戏目录长得差不多，只是去掉了图像、声音等文件
+
+* 游戏一更新，玩家几乎是马上收到 Steam 更新的，但服务器镜像要怎么跟进 Steam 呢？
+** 雪上加霜的是，游戏服务器与客户端的版本必须对应，不存在兼容一说
+
+想来想去，还是整个游戏目录做持久化稳妥，随便作者今后怎么改动。而且通过 SteamCMD（一个命令行版的 Steam 客户端），重启容器就能更新。这就是 `slim` 风格的由来。
+
+然而，根据服务商的不同，有些人访问远程的 Docker Volume 会很麻烦，连基本的修改房间密码、指定房主都费劲。那这时候就可以考虑把房间文件全都打包到镜像里，只要能跑起来就行了。于是就有了 `preload` 。
+
+但这还不够，因为网络原因，有些人的服务器无法稳定访问 Steam（下载游戏需要用 SteamCMD 匿名登录 Steam），那这种时候就只能舍弃 SteamCMD 的更新功能，改用 Docker 镜像更新了。于是经过一顿魔改，得到了 `dockerful` 风格的镜像。
+
+`Dockerful` 看上去是最优雅的，实际上也是作者投入精力最多的，但在面对游戏破坏性更新时也是最脆弱的。`slim` 看起来土法炼钢，但即使作者弃坑，也能长时间保持正常工作。`preload` 虽然在未来可能失效，但已经跑来的容器至少可以正常更新。
+
+如果选择困难，选 `slim`。
+
+[[prepare-your-files]]
+## 开始之前：准备文件
+
+因为游戏服务器与客户端共享一套设置文件的特点，我们可以先在本地配置好一套服务器设置，再上传到真正的服务器上。
+
+1. 在你的电脑上启动《潜渊症》游戏，在设置里启用需要的 Mod
+2. 在主菜单创建一个服务器，设置好密码、是否公开（这两项进房间后没法改）
+3. 在房间里调整各项设置，分配玩家权限，但不用一步到位，这些之后也可以改
+ * 你不需要开始游戏，修改的房间设置会立即保存
+4. 改好后，打开游戏目录（比如 Steam\steamapps\common\Barotrauma），找到这些文件：
+
+.主要的服务器设置文件
+ serversettings.xml
+
+.多人游戏玩家权限清单
+ Data/clientpermissions.xml
+
+以上是必须的，以下看需要
+
+.玩家个性化设置，这里只需要其中的语言与Mod设置
+ config_player.xml
+
+.Mod文件夹
+ Mods/
+
+.潜艇文件
+ Submarines/xxxx.sub
+
+.善恶值设置，如果没改就不用
+ Data/karmasettings.xml
+
+.多人战役存档
+----
+# Windows
+"%localappdata%\Daedalic Entertainment GmbH\Barotrauma\Multiplayer"
+
+# macOS / Linux
+"~/.local/share/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+----
+
+建议先把这些文件复制到一个地方。
+
+### 修改 `config_player.xml`
+
+这个文件有点特别，我们只需要用到两部分：
+
+1. 语言设置（影响机器人聊天，哨站名称，服务器日志等）
+
+ language="Simplified Chinese"
+
+2. Mod 设置
+
+[source,xml]
+----
+  <contentpackages>
+    <core
+      name="Vanilla 0.9" />
+    <regular>
+      <package
+        name="Holiday Oceanic"
+        enabled="true" />
+      <package
+        name="Dayu" />
+    </regular>
+  </contentpackages>
+----
+
+如果你没有启用 Mod ，直接用 link:docs/config_player.xml[我改好的版本] 即可，我在服务器默认设置的基础上改成了中文。
+
+如果你要启用 Mod，下载 link:docs/config_player.xml[我改好的版本]，把其中 <contentpackages> 部分用你的替换即可。
+
+[[how-to-run-slim-flavor]]
+## 运行指南- `slim`
+
+### 1. 检查运行环境
+
+确保你能够访问 Docker Volume 挂载的目录，如果不能，直接看 <<how-to-run-preload-flavor,`preload`>> 或 <<how-to-run-dockerful-flavor,`dockerful`>>。
+
+### 2. 首次运行
+
+.方法A 使用 `docker run`
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-slim \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  yanwk/barotrauma-server:slim
+----
+
+.方法B 使用 `docker compose`
+[source,sh]
+----
+git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+docker compose -f docker-compose.slim.yml up
+----
+
+* 如果顺利，日志会显示“Server started”
+* 目前只能通过 IP 访问到这个服务器
+** 确保端口 `27015/udp` & `27016/udp` 已打开
+
+### 3. 上传文件
+
+注意，上传之前，确保游戏房间内没有玩家，或者停掉服务。
+
+用刚才准备好的文件，上传到服务器的对应目录。
+
+如果你需要**绝对路径**：
+
+ "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+
+多人战役存档：
+
+ "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+
+TIP: 小技巧，你可以 https://ignis05.github.io/baro-save-editor/[把单人战役转成多人战役]
+
+### 4. 重启服务器
+
+绝大部分设置必须重启服务器才能生效
+
+.方法A 使用 `docker restart`
+ docker restart barotrauma-server-slim
+
+.方法B 使用 `docker compose`
+ docker compose -f docker-compose.slim.yml restart
+
+如果你之前配置了“公开服务器”，过一会儿你的服务器就会出现在公共列表里了
+
+如果你要更新游戏版本，也是重启容器即可。
+
+[[how-to-run-preload-flavor]]
+## 运行指南 - `preload`
+
+基本运行流程和 <<how-to-run-slim-flavor,`slim`风格>>一样，只是镜像 tag 换一下：
+
+.方法A 使用 `docker run`
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-preloaded \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  yanwk/barotrauma-server:preload
+----
+
+.方法B 使用 `docker compose`
+[source,sh]
+----
+git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+docker compose --file docker-compose.preload.yml up
+----
+
+到这一步，和 `slim` 的区别只是提前下好了游戏服务器，并额外占用了几百兆存储空间。
+
+你可能想要的是 <<build-your-own,构建自己的版本>>
+
+[[how-to-run-dockerful-flavor]]
+## 运行指南 - `dockerful`
+
+该风格和前两者完全不同，但可以通过容器的环境变量来设置服务器名称、密码、房主、是否公开。
+
+### 1. 启动并配置服务器
+
+.方法A 使用 `docker run`
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-dockerful \
+  --env DEFAULT_SERVERNAME=AABBCC \
+  --env DEFAULT_PASSWORD=112233 \
+  --env DEFAULT_PUBLICITY=true \
+  --env DEFAULT_LANGUAGE="Simplified Chinese" \
+  --env DEFAULT_OWNER_STEAMNAME="S0m3_b0dy" \
+  --env DEFAULT_OWNER_STEAMID=5566778899 \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-data:/persistence" \
+  yanwk/barotrauma-server:dockerful
+----
+
+.方法B 使用 `docker compose`
+[source,sh]
+----
+git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+### 编辑 compose 文件... ###
+docker compose --file docker-compose.preload.yml up
+----
+
+环境变量对应如下设置：
+----
+DEFAULT_SERVERNAME=初始服务器名称
+DEFAULT_PASSWORD=初始服务器密码
+DEFAULT_PUBLICITY=初始是否公开
+DEFAULT_LANGUAGE=初始语言
+DEFAULT_OWNER_STEAMNAME=初始房主的Steam显示名称
+DEFAULT_OWNER_STEAMID=初始房主的Steam ID
+FORCE_SERVERNAME=更改服务器名称
+FORCE_PASSWORD=更改服务器密码
+FORCE_PUBLICITY=更改是否公开
+FORCE_LANGUAGE=更改语言
+FORCE_OWNER_STEAMNAME=更改房主的Steam显示名称
+FORCE_OWNER_STEAMID=更改房主的Steam ID
+----
+
+* 各项设置间是独立的，除了房主信息要成对输入，其他设置有哪些就生效哪些
+* 启动脚本会检查设置文件是否已经存在，如果不存在，“初始”变量才会生效
+* “更改”的优先级要高于“初始”
+* 只要“更改”不为空，启动脚本就会写入设置文件。因此建议变更后用空的环境变量重新启动服务器
+
+启动成功后，就可以正常进行原版游戏了。如果不需要 Mod 等，就不用往下看了。
+
+### 2. 按需上传文件
+
+访问容器的持久化挂载，目录下四个子文件夹分别为：
+
+[cols="1,1"]
+|===
+|configs
+|服务器设置文件
+
+|mods
+|Mod 文件
+
+|multiplayer-saves
+|多人战役存档
+
+|submarines
+|潜艇文件
+|=== 
+
+### 3. 再次启动，使设置生效
+
+和 `slim` 与 `preload` 不同， `dockerful` 在容器启动时并不查询新版本，因此启动很快。这里我们可以重启容器，也可以直接开一个新容器（注意删掉原来的）：
+
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-dockerful \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-data:/persistence" \
+  yanwk/barotrauma-server:dockerful
+----
+
+### 4. 如果需要修改设置
+
+除了修改文件，也可以用环境变量强制更新：
+
+[source,sh]
+----
+docker run \
+  --name barotrauma-server-dockerful \
+  --env FORCE_SERVERNAME=AABBCC \
+  --env FORCE_PASSWORD=112233 \
+  --env FORCE_PUBLICITY=true \
+  --env FORCE_LANGUAGE="Simplified Chinese" \
+  --env FORCE_OWNER_STEAMNAME="S0m3_b0dy" \
+  --env FORCE_OWNER_STEAMID=5566778899 \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-data:/persistence" \
+  yanwk/barotrauma-server:dockerful
+----
+
+如果用 docker compose，直接修改 compose 文件即可。
+
+[[build-your-own]]
+## 构建指南
+
+1. 克隆本仓库
+
+ git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+
+2. <<prepare-your-files,准备房间文件>>
+
+3. 替换 link:preloads/[preloads/] 目录下的文件
+
+4. 构建并测试
+
+.`preload` 
+[source,sh]
+----
+docker build . -f Dockerfile.preload \
+  -t my-baro-server:preload
+----
+
+.`dockerful`
+[source,sh]
+----
+docker build . -f Dockerfile.dockerful \
+  -t my-baro-server:dockerful
+----
+
+启动命令参考前文所述
+
+### 参考命令：启动容器但不启动游戏服务器
+
+以下命令会以 root 进入 bash，便于测试
+
+.`preload`
+[source,sh]
+----
+docker run \
+  --name barotrauma-testing-preload \
+  -it \
+  --user root \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-gamedir:/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server" \
+  my-baro-server:preload \
+  /bin/bash
+----
+
+.`dockerful`
+[source,sh]
+----
+docker run \
+  --name barotrauma-testing-dockerful \
+  -it \
+  --user root \
+  -p 27015:27015/udp \
+  -p 27016:27016/udp \
+  -v "baro-data:/persistence" \
+  my-baro-server:dockerful \
+  /bin/bash
+----
+

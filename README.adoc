@@ -1,4 +1,6 @@
-# Dockerfile that contains Barotrauma Dedicated Server.
+# Run Barotrauma Dedicated Server in Docker
+
+*link:README.zh.adoc[>>中文文档<<]*
 
 This repo is inspired by https://github.com/CM2Walki/steamcmd[CM2Walki/steamcmd] 
 and https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley/barotrauma-dedicated-server-docker], with a different approach.

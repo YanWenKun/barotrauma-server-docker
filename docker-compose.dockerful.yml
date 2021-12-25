@@ -2,14 +2,27 @@ version: "3.3"
 services:
   barotrauma-dedicated-server:
     container_name: barotrauma-server-dockerful
+    build:
+      context: .
+      dockerfile: Dockerfile.dockerful
+    image: "yanwk/barotrauma-server:dockerful"
     ports:
       - "27015:27015/udp"
       - "27016:27016/udp"
     volumes:
       - "baro-data:/persistence"
-    build:
-      context: .
-      dockerfile: Dockerfile.dockerful
-    image: "yanwk/barotrauma-server:dockerful"
+    environment:
+      - DEFAULT_SERVERNAME=
+      - DEFAULT_PASSWORD=
+      - DEFAULT_PUBLICITY=
+      - DEFAULT_LANGUAGE=
+      - DEFAULT_OWNER_STEAMNAME=
+      - DEFAULT_OWNER_STEAMID=
+      - FORCE_SERVERNAME=
+      - FORCE_PASSWORD=
+      - FORCE_PUBLICITY=
+      - FORCE_LANGUAGE=
+      - FORCE_OWNER_STEAMNAME=
+      - FORCE_OWNER_STEAMID=
 volumes:
   baro-data:
