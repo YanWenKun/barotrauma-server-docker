@@ -50,7 +50,7 @@ jobs:
         id: push-to-dockerhub
         uses: redhat-actions/push-to-registry@v2
         with: 
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: | 
             ${{ steps.build-image-slim.outputs.tags }}
             ${{ steps.build-image-preload.outputs.tags }}
