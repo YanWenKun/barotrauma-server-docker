@@ -1,0 +1,21 @@
+name: Test-build Docker Image
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build-all:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: redhat-actions/buildah-build@v2
+      with:
+        context: .
+        containerfiles: |
+          Dockerfile.slim
+          Dockerfile.preload
+          Dockerfile.dockerful

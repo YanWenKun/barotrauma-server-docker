@@ -1,0 +1,51 @@
+name: Publish 'slim' and 'preload' to Docker Hub
+
+on:
+  schedule:
+    # Run on every Wednesday 00:00 UTC
+    - cron: "00 0 * * 3"
+
+jobs:
+  build-publish:
+    environment: Publish to Docker Hub
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        name: Git checkout
+        uses: actions/checkout@v2
+      - 
+        name: Build 'slim'
+        id: build-image-slim
+        uses: redhat-actions/buildah-build@v2
+        with:
+          context: .
+          containerfiles: Dockerfile.slim
+          image: docker.io/yanwk/barotrauma-server
+          tags: |
+            slim
+            slim-$(date +%Y%m%d)
+      - 
+        name: Build 'preload'
+        id: build-image-preload
+        uses: redhat-actions/buildah-build@v2
+        with:
+          context: .
+          containerfiles: Dockerfile.preload
+          image: docker.io/yanwk/barotrauma-server
+          tags: preload
+      - 
+        name: Push to Docker Hub
+        id: push-to-dockerhub
+        uses: redhat-actions/push-to-registry@v2
+        with: 
+          image: docker.io/yanwk/barotrauma-server
+          tags: | 
+            ${{ steps.build-image-slim.outputs.tags }}
+            ${{ steps.build-image-preload.outputs.tags }}
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+      - 
+        name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-dockerhub.outputs.registry-paths }}"
