@@ -22,9 +22,7 @@ jobs:
           context: .
           containerfiles: Dockerfile.slim
           image: docker.io/yanwk/barotrauma-server
-          tags: |
-            slim
-            "slim-$(date +%Y%m%d)"
+          tags: slim
       - 
         name: Build 'preload'
         id: build-image-preload
