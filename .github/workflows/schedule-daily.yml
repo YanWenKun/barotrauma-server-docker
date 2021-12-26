@@ -1,12 +1,9 @@
-name: Publish 'slim' tag to Docker Hub
+name: Publish 'preload' tag to Docker Hub
 
 on:
   schedule:
-    # Run on every Wednesday 00:00 UTC
-    - cron: '00 0 * * 3'
-  push:
-    # Run on every push to main branch
-    branches: [ main ]
+    # Run everyday at 00:00 UTC
+    - cron: '0 0 * * *'
 
 jobs:
 
@@ -17,8 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker images (slim)
-      run: docker build . --file Dockerfile.slim --tag yanwk/barotrauma-server:slim --tag yanwk/barotrauma-server:slim-$(date +%Y%m%d)
+    - name: Build the Docker images (preload)
+      run: docker build . --file Dockerfile.preload --tag yanwk/barotrauma-server:preload
     - name: Docker Hub Login
       uses: docker/login-action@v1
       with:

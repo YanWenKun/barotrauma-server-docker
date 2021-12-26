@@ -1,12 +1,9 @@
-name: Publish 'dockerful' tag to Docker Hub
+name: Publish 'slim' tag to Docker Hub
 
 on:
   schedule:
-    # Run every 3 hours
-    - cron: '00 */3 * * *'
-  push:
-    # Run on every push to main branch
-    branches: [ main ]
+    # Run on every Wednesday 00:00 UTC
+    - cron: '00 0 * * 3'
 
 jobs:
 
@@ -17,8 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker images (dockerful)
-      run: docker build . --file Dockerfile.dockerful --tag yanwk/barotrauma-server:dockerful
+    - name: Build the Docker images (slim)
+      run: docker build . --file Dockerfile.slim --tag yanwk/barotrauma-server:slim --tag yanwk/barotrauma-server:slim-$(date +%Y%m%d)
     - name: Docker Hub Login
       uses: docker/login-action@v1
       with:
