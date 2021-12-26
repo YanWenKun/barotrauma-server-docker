@@ -24,7 +24,7 @@ jobs:
           image: docker.io/yanwk/barotrauma-server
           tags: |
             slim
-            slim-$(date +%Y%m%d)
+            "slim-$(date +%Y%m%d)"
       - 
         name: Build 'preload'
         id: build-image-preload
