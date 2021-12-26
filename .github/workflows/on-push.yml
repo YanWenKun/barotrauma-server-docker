@@ -22,7 +22,7 @@ jobs:
           oci: true
           context: .
           containerfiles: Dockerfile.slim
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: slim
       - 
         name: Build 'preload'
@@ -32,7 +32,7 @@ jobs:
           oci: false
           context: .
           containerfiles: Dockerfile.preload
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: preload
       - 
         name: Build 'dockerful'
@@ -40,11 +40,10 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           archs: amd64
-          platforms: linux
           oci: true
           context: .
           containerfiles: Dockerfile.dockerful
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: dockerful
       - 
         name: Push to Docker Hub
