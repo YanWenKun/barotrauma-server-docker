@@ -1,26 +1,33 @@
-############################################################
+################################################################################
 # Dockerfile that contains the Barotrauma dedicated server.
 # SteamCMD part is inspired by: https://github.com/CM2Walki/steamcmd
 # BaroServer part is inspired by: https://github.com/gnoeley/barotrauma-dedicated-server-docker
-############################################################
+################################################################################
 
 FROM opensuse/leap:15.4
 
 LABEL maintainer="code@yanwk.fun"
 
-# Create a low-privilege user.
-# Install .NET runtime & SteamCMD.
-# Disable all Zypper repos.
-# Run SteamCMD for the first time, let it update.
-# Clear /tmp when done.
+# This image is less-often built, so less cache layer is needed.
+# 1. Create a low-privilege user.
+# 2. Install .NET runtime & SteamCMD.
+# 3. Disable all Zypper repos.
+# 4. Run SteamCMD for the first time, let it update.
+# 5. Clear /tmp when done.
 RUN set -eux \
     && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
     && mkdir -p /home/runner \
     && groupadd runner \
     && useradd runner -g runner -d /home/runner \
     && chown runner:runner /home/runner \
-    && sh -c 'echo -e "[packages-microsoft-com-prod]\nname=packages-microsoft-com-prod\nbaseurl=https://packages.microsoft.com/opensuse/15/prod/\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" \
-        > /etc/zypp/repos.d/microsoft-prod.repo' \
+    && printf "\
+[packages-microsoft-com-prod]\n\
+name=packages-microsoft-com-prod\n\
+baseurl=https://packages.microsoft.com/opensuse/15/prod/\n\
+enabled=1\n\
+gpgcheck=1\n\
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc\n" \
+        > /etc/zypp/repos.d/microsoft-prod.repo \
     && zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
            libicu \
@@ -33,31 +40,31 @@ RUN set -eux \
 
 # Install & run the game server in a low-privilege user.
 USER runner:runner
-WORKDIR /home/runner
 
-ENV STEAMAPPID 1026340
-ENV GAMEDIR "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+ENV STEAMAPPID=1026340
+ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
-# Necessary symlink for SteamCMD.
+# 1. Symlink lib for game server to access Steam service.
+# 2. Make direcotry for saving multiplayer campaigns.
+# Note: if "~/.local/share/" doesn't exists, the game will try save campaigns inside main folder.
+# So we save all files in one place.
 RUN set -eux \
     && mkdir -p /home/runner/Steam \
     && mkdir -p /home/runner/.steam/sdk32 \
     && mkdir -p /home/runner/.steam/sdk64 \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
-    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
+    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so \
+    && mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
 
-# Note: if dir "~/.local/share" doesn't exists, the game server will try save
-# multiplayer campaign file to "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer".
-# So one VOLUME is enough for persistence.
-RUN mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
 VOLUME $GAMEDIR
 
-EXPOSE 27015/udp
-EXPOSE 27016/udp
+WORKDIR $GAMEDIR
+
+EXPOSE 27015/udp 27016/udp
 
 # If the executable file doesn't exist, SteamCMD will download, install and validate the server.
 # If exists, SteamCMD will try to update the server, but without validation (or config files will be replaced).
-CMD if [[ -f "${GAMEDIR}/DedicatedServer" ]] ; then \
+CMD if [ -f "${GAMEDIR}/DedicatedServer" ] ; then \
         steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
     else \
         steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \

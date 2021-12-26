@@ -1,4 +1,6 @@
 #!/bin/sh
+# Startup script for Docker image "yanwk/barotrauma-server:dockerful"
+# by: <code@yanwk.fun>
 
 set -eu
 

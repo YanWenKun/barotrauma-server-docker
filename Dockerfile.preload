@@ -36,10 +36,9 @@ RUN steamcmd +'quit' \
 
 # Install & run the game server in a low-privilege user.
 USER runner:runner
-WORKDIR /home/runner
 
-ENV STEAMAPPID 1026340
-ENV GAMEDIR "/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+ENV STEAMAPPID=1026340
+ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
 # Necessary symlink for SteamCMD.
 RUN set -eux \
@@ -59,18 +58,19 @@ RUN steamcmd \
         +'quit'
 
 # Preload files from this git repository.
-ENV SAVEDIR "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+ARG SAVEDIR="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
 RUN mkdir -p "${SAVEDIR}"
-COPY --chown=runner:runner preloads/configs/serversettings.xml    ${GAMEDIR}/serversettings.xml
-COPY --chown=runner:runner preloads/configs/config_player.xml     ${GAMEDIR}/config_player.xml
-COPY --chown=runner:runner preloads/configs/clientpermissions.xml ${GAMEDIR}/Data/clientpermissions.xml
-COPY --chown=runner:runner preloads/configs/karmasettings.xml     ${GAMEDIR}/Data/karmasettings.xml
+# COPY from Windows will chmod 777, *nix respect original modes.
+COPY --chown=runner:runner ["preloads/configs/serversettings.xml","preloads/configs/config_player.xml","${GAMEPATH}/"]
+COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/configs/karmasettings.xml","${GAMEPATH}/Data/"]
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
 COPY --chown=runner:runner preloads/submarines/. "${GAMEDIR}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEDIR}/"
 COPY --chown=runner:runner preloads/mods/. "${GAMEDIR}/Mods/"
 
 VOLUME $GAMEDIR
+
+WORKDIR $GAMEDIR
 
 EXPOSE 27015/udp
 EXPOSE 27016/udp

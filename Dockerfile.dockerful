@@ -17,8 +17,8 @@ RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
 # Run SteamCMD for the first time, let it update & install some files. Docker will cache a layer.
 RUN steamcmd +'quit'
 
-ENV STEAMAPPID 1026340
-ENV DLPATH /download
+ARG STEAMAPPID=1026340
+ARG DLPATH=/download
 
 # Download the game server and validate.
 RUN mkdir -p ${DLPATH} \
@@ -35,8 +35,7 @@ RUN set -eux \
     && mkdir -p ${DLPATH}/.steam/sdk32 \
     && mkdir -p ${DLPATH}/.steam/sdk64 \
     && cp /usr/lib/steamcmd/linux32/steamclient.so ${DLPATH}/.steam/sdk32/steamclient.so \
-    && cp /usr/lib/steamcmd/linux64/steamclient.so ${DLPATH}/.steam/sdk64/steamclient.so \
-    && cp -n /usr/lib/steamcmd/linux64/steamclient.so ${DLPATH}/steamclient.so
+    && cp /usr/lib/steamcmd/linux64/steamclient.so ${DLPATH}/.steam/sdk64/steamclient.so
 
 ################################################################################
 
@@ -55,12 +54,13 @@ RUN zypper --gpg-auto-import-keys \
             dotnet-runtime-3.1 \
     && zypper modifyrepo --disable --all
 
-ENV DLPATH /download
-ENV GAMEPATH /workload
-ENV SAVEPATH "${GAMEPATH}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
-ENV SCRIPTPATH ${GAMEPATH}/scripts
-ENV ENTRYSCRIPT ${SCRIPTPATH}/dockerful-entry.sh
-ENV MOUNTPATH /persistence
+ARG DLPATH=/download
+
+ENV GAMEPATH=/workload
+ENV SAVEPATH="${GAMEPATH}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
+ENV SCRIPTPATH=${GAMEPATH}/scripts
+ENV ENTRYSCRIPT=${SCRIPTPATH}/dockerful-entry.sh
+ENV MOUNTPATH=/persistence
 
 # Create a low-privilege user to run the server.
 # It's a hack to use /workload as $HOME, so we don't need to copy <steamclient.so> again.
@@ -81,19 +81,14 @@ RUN rm -rf "${GAMEPATH}/Mods/*"
 
 # Preload files from this git repository.
 # COPY from Windows will chmod 777, *nix respect original modes.
-COPY --chown=runner:runner preloads/configs/serversettings.xml    ${GAMEPATH}/serversettings.xml
-COPY --chown=runner:runner preloads/configs/config_player.xml     ${GAMEPATH}/config_player.xml
-COPY --chown=runner:runner preloads/configs/clientpermissions.xml ${GAMEPATH}/Data/clientpermissions.xml
-COPY --chown=runner:runner preloads/configs/karmasettings.xml     ${GAMEPATH}/Data/karmasettings.xml
+COPY --chown=runner:runner ["preloads/configs/serversettings.xml","preloads/configs/config_player.xml","${GAMEPATH}/"]
+COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/configs/karmasettings.xml","${GAMEPATH}/Data/"]
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
 COPY --chown=runner:runner preloads/submarines/. "${GAMEPATH}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEPATH}/"
 COPY --chown=runner:runner preloads/mods/. "${GAMEPATH}/Mods/"
 
-# hack to solve "failed to create image" CI/CD problem
-RUN true
 COPY --chown=runner:runner resources/dockerful-entry.sh "${ENTRYSCRIPT}"
-RUN true
 COPY --chown=runner:runner resources/template_clientpermissions.xml ${SCRIPTPATH}/template_clientpermissions.xml
 RUN chmod 500 "${ENTRYSCRIPT}"
 
