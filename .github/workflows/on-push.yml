@@ -19,6 +19,7 @@ jobs:
         id: build-image-slim
         uses: redhat-actions/buildah-build@v2
         with:
+          oci: true
           context: .
           containerfiles: Dockerfile.slim
           image: docker.io/yanwk/barotrauma-server
@@ -28,6 +29,7 @@ jobs:
         id: build-image-preload
         uses: redhat-actions/buildah-build@v2
         with:
+          oci: false
           context: .
           containerfiles: Dockerfile.preload
           image: docker.io/yanwk/barotrauma-server
@@ -37,6 +39,9 @@ jobs:
         id: build-image-dockerful
         uses: redhat-actions/buildah-build@v2
         with:
+          archs: amd64
+          platforms: linux
+          oci: true
           context: .
           containerfiles: Dockerfile.dockerful
           image: docker.io/yanwk/barotrauma-server
