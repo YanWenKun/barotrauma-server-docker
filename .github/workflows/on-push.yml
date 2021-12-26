@@ -19,7 +19,7 @@ jobs:
         id: build-image-slim
         uses: redhat-actions/buildah-build@v2
         with:
-          oci: true
+          oci: false
           context: .
           containerfiles: Dockerfile.slim
           image: yanwk/barotrauma-server
@@ -39,8 +39,7 @@ jobs:
         id: build-image-dockerful
         uses: redhat-actions/buildah-build@v2
         with:
-          archs: amd64
-          oci: true
+          oci: false
           context: .
           containerfiles: Dockerfile.dockerful
           image: yanwk/barotrauma-server

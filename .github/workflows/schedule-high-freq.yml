@@ -20,16 +20,17 @@ jobs:
         id: build-image-dockerful
         uses: redhat-actions/buildah-build@v2
         with:
+          oci: false
           context: .
           containerfiles: Dockerfile.dockerful
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: dockerful
       - 
         name: Push to Docker Hub
         id: push-to-dockerhub
         uses: redhat-actions/push-to-registry@v2
         with: 
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: ${{ steps.build-image-dockerful.outputs.tags }}
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}

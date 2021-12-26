@@ -19,25 +19,27 @@ jobs:
         id: build-image-slim
         uses: redhat-actions/buildah-build@v2
         with:
+          oci: false
           context: .
           containerfiles: Dockerfile.slim
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: slim
       - 
         name: Build 'preload'
         id: build-image-preload
         uses: redhat-actions/buildah-build@v2
         with:
+          oci: false
           context: .
           containerfiles: Dockerfile.preload
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: preload
       - 
         name: Push to Docker Hub
         id: push-to-dockerhub
         uses: redhat-actions/push-to-registry@v2
         with: 
-          image: docker.io/yanwk/barotrauma-server
+          image: yanwk/barotrauma-server
           tags: | 
             ${{ steps.build-image-slim.outputs.tags }}
             ${{ steps.build-image-preload.outputs.tags }}
