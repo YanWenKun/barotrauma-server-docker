@@ -18,7 +18,7 @@ Most importantly, is whether you need Modding or not.
 
 For different scenario, we have three flavors: 
 
-* <<how-to-run-slim-flavor,`slim`>> would run container in an 'old fashioned', 'non-dockerful', yet robust way.
+* <<how-to-run-slim-flavor,`slim`>> would run container in an "old fashioned", "non-dockerful", yet robust way.
 ** It only come with .NET runtime and SteamCMD (Official Steam Client CLI).
 ** It will download & install the game server on first start.
 ** It will update the game server (via SteamCMD) on every container restart.
@@ -32,7 +32,7 @@ For different scenario, we have three flavors:
 ** Use it when you prefer `slim` but your server has a slow connection to Steam.
 ** If you're familiar with `docker build`, you could use this `Dockerfile.preload` to build your own image, preloading all your files into it.
 
-* <<how-to-run-dockerful-flavor,`dockerful`>> is 'containerized' at best.
+* <<how-to-run-dockerful-flavor,`dockerful`>> is "containerized" at best.
 ** No SteamCMD included. Won't check update when start (so **starts fast** and **won't stuck at connecting Steam**).
 ** If the game updates, you'll need to run a new container with an up-to-date `yanwk/barotrauma-server:dockerful` image (this repo auto-builds every 3 hours).
 ** Certain files (including your **settings, mods, submarines and campaign saves**) are mounted to a docker volume for persistence.
@@ -233,10 +233,12 @@ docker compose --file docker-compose.preload.yml up
 
 ### 2. Upload your files (optional)
 
-Access your docker volume, there are four subfolders:
+Access your docker volume, there are four subfolders, upload to them accordingly:
 
-[cols="1,1"]
-|===
+[cols=2]
+|=== 
+|Folder Name |Description
+
 |configs
 |Server Settings
 
@@ -247,9 +249,10 @@ Access your docker volume, there are four subfolders:
 |Multiplayer Campaign Save
 
 |submarines
-|Submarine Files (.sub)
+|Submarine Files (*.sub)
 |=== 
 
+You may want to check <<prepare-your-files,file list>>.
 
 ### 3. Restart the server (optional)
 
@@ -297,7 +300,7 @@ After you force-updated new settings, it's better start a new container (again) 
 
 
 [[build-your-own]]
-## Advanced: Build your own pre-loaded version
+## Advanced: Build your own pre-loaded image
 
 In this ultimate way, you build your own docker image pre-loaded with all settings, mods, submarines and saves.
 This could be useful if you don't have access to your container's volume. But you still need to find a way to backup your saves.
@@ -343,6 +346,7 @@ Since the Dockerfile here is using CMD as entry, you can easily override it, lik
 ----
 docker run \
   -it \
+  --rm \
   --user root \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
