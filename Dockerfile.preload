@@ -1,8 +1,12 @@
-############################################################
-# Dockerfile that contains the Barotrauma dedicated server.
+################################################################################
+# Dockerfile that contains Barotrauma Dedicated Server.
+# Come with SteamCMD.
+# Come with the server installed.
+# Will update the server on every start.
+#
 # SteamCMD part is inspired by: https://github.com/CM2Walki/steamcmd
 # BaroServer part is inspired by: https://github.com/gnoeley/barotrauma-dedicated-server-docker
-############################################################
+################################################################################
 
 FROM opensuse/leap:15.4
 

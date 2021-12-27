@@ -1,5 +1,9 @@
 ################################################################################
-# Dockerfile that contains the Barotrauma dedicated server.
+# Dockerfile that contains Barotrauma Dedicated Server.
+# Come with SteamCMD.
+# Will download the server on first start.
+# Will update the server on every start.
+#
 # SteamCMD part is inspired by: https://github.com/CM2Walki/steamcmd
 # BaroServer part is inspired by: https://github.com/gnoeley/barotrauma-dedicated-server-docker
 ################################################################################
@@ -44,7 +48,7 @@ USER runner:runner
 ENV STEAMAPPID=1026340
 ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
-# 1. Symlink lib for game server to access Steam service.
+# 1. Symlink lib for the game server to access Steam service.
 # 2. Make direcotry for saving multiplayer campaigns.
 # Note: if "~/.local/share/" doesn't exists, the game will try save campaigns inside main folder.
 # So we save all files in one place.

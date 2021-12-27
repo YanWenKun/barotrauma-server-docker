@@ -1,7 +1,7 @@
 ################################################################################
-# Dockerfile that contains the Barotrauma dedicated server.
-# Stage 1: Download the server using SteamCMD
-# Stage 2: Put the server in a clean environment.
+# Dockerfile that contains Barotrauma Dedicated Server.
+# Stage 1: Download the server using SteamCMD.
+# Stage 2: Put the server in a separate running environment.
 ################################################################################
 
 FROM opensuse/leap:15.4 AS stage1

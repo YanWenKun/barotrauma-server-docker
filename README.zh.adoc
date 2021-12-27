@@ -5,27 +5,31 @@
 
 针对使用场景不同，分了三种风格，按需选择：
 
+* 一句话剧透
+** 如果你需要 5 分钟之内启动服务器，选 <<how-to-run-dockerful-flavor,`dockerful`>> ）
+** 如果你需要装一堆 Mod，进行一场漫长的游戏，选 <<how-to-run-slim-flavor,`slim`>>
+
 * <<how-to-run-slim-flavor,`slim`>> 走复古运维风格：
 ** 仅包含基本的运行环境，相当于一台刚安装了 Steam 的电脑
 ** 第一次启动时由 SteamCMD 自动下载安装游戏服务器
 ** 遇到游戏版本更新，重启容器即可，SteamCMD 会执行更新，不用关心 Docker 镜像
-** 整个程序目录都映射到持久化存储，方便编辑房间文件（设置、存档、潜艇文件、Mod）
-** 虽然“这也太不容器范儿了”，但却是最简单无脑、灵活方便的选择，只要能访问存储目录就行
+** 整个程序目录都映射到持久化存储，方便编辑游戏房间文件（设置、存档、潜艇文件、Mod）
+** 虽然“这也太不容器范儿了”，但却是最直白、灵活、稳健的选择，只要能访问存储目录就行
 
 * <<how-to-run-preload-flavor,`preload`>> 跟 `slim` 差不多，但提前安装了游戏服务器文件
-** 此外，如果你会构建 Docker 镜像，还可以提前把房间文件打包到镜像中，省去在服务器上操作（见 <<build-your-own,构建指南>>）
+** 此外，如果你会构建 Docker 镜像，还可以提前把游戏房间文件打包到镜像中，省去在服务器上操作（见 <<build-your-own,构建指南>>）
 
 * <<how-to-run-dockerful-flavor,`dockerful`>> 是经过魔改后的“容器风格”
 ** 没有 SteamCMD，版本更新依靠 Docker 镜像更新
-** 对需要持久化存储的房间文件做了单独的映射
+** 对需要持久化存储的游戏房间文件做了单独的映射
 ** 支持使用容器的环境变量来设置服务器名称、密码、房主、是否公开
-** 支持像 `preload` 一样提前把房间文件打包到镜像中
+** 支持像 `preload` 一样提前把游戏房间文件 <<build-your-own,打包到镜像中>> ，但是每次启动时会尝试复制这些文件到持久化存储（不覆盖），可能会造成 Mods 文件夹混乱。
 
 ## 还是没理解？
 
 之所以这么折腾，是因为这游戏多人联机时，所有人的 Mod 需要同步开启，确切的说是和房主同步，存档和潜艇文件也是由房主提供。
 
-而在独立服务器上，服务器本身就成了“房主”，如果你想要和小伙伴们一起开 Mod，就需要把 Mod 文件传到服务器上，然后编辑设置文件启用（你可能想到了 SteamCMD，但那玩意 https://barotraumagame.com/wiki/Enabling_Mods_on_a_Dedicated_Server[指望不上]）。
+而在独立服务器上，服务器本身就成了“房主”，如果你想要和小伙伴们一起开 Mod，就需要把 Mod 文件传到服务器上，然后编辑设置文件启用（你可能想到了 SteamCMD 来管理 Mod，但那玩意 https://barotraumagame.com/wiki/Enabling_Mods_on_a_Dedicated_Server[指望不上]）。
 
 于是麻烦来了：
 
@@ -36,18 +40,18 @@
 * 游戏一更新，玩家几乎是马上收到 Steam 更新的，但服务器镜像要怎么跟进 Steam 呢？
 ** 雪上加霜的是，游戏服务器与客户端的版本必须对应，不存在兼容一说
 
-想来想去，还是整个游戏目录做持久化稳妥，随便作者今后怎么改动。而且通过 SteamCMD（一个命令行版的 Steam 客户端），重启容器就能更新。这就是 `slim` 风格的由来。
+想来想去，还是整个游戏目录做持久化稳妥，随便开发者今后怎么改动。而且通过 SteamCMD（一个命令行版的 Steam 客户端），重启容器就能更新。这就是 `slim` 风格的由来。
 
-然而，根据服务商的不同，有些人访问远程的 Docker Volume 会很麻烦，连基本的修改房间密码、指定房主都费劲。那这时候就可以考虑把房间文件全都打包到镜像里，只要能跑起来就行了。于是就有了 `preload` 。
+然而，根据服务商的不同，有些人访问远程的 Docker Volume 会很麻烦，连基本的修改房间密码、指定房主都费劲。那这时候就可以考虑把游戏房间文件全都打包到镜像里，只要能跑起来就行了。于是就有了 `preload` 。
 
 但这还不够，因为网络原因，有些人的服务器无法稳定访问 Steam（下载游戏需要用 SteamCMD 匿名登录 Steam），那这种时候就只能舍弃 SteamCMD 的更新功能，改用 Docker 镜像更新了。于是经过一顿魔改，得到了 `dockerful` 风格的镜像。
 
 `Dockerful` 看上去是最优雅的，实际上也是作者投入精力最多的，但在面对游戏破坏性更新时也是最脆弱的。`slim` 看起来土法炼钢，但即使作者弃坑，也能长时间保持正常工作。`preload` 虽然在未来可能失效，但已经跑来的容器至少可以正常更新。
 
-如果选择困难，选 `slim`。
+如果还是选择困难，选 `slim`。
 
 [[prepare-your-files]]
-## 开始之前：准备文件
+## 开始之前：准备游戏房间文件
 
 因为游戏服务器与客户端共享一套设置文件的特点，我们可以先在本地配置好一套服务器设置，再上传到真正的服务器上。
 
@@ -181,7 +185,7 @@ TIP: 小技巧，你可以 https://ignis05.github.io/baro-save-editor/[把单人
 [[how-to-run-preload-flavor]]
 ## 运行指南 - `preload`
 
-基本运行流程和 <<how-to-run-slim-flavor,`slim`风格>>一样，只是镜像 tag 换一下：
+基本运行流程和 <<how-to-run-slim-flavor,`slim`>> 一样，只是镜像 tag 换一下：
 
 .方法A 使用 `docker run`
 [source,sh]
@@ -243,20 +247,19 @@ DEFAULT_SERVERNAME=初始服务器名称
 DEFAULT_PASSWORD=初始服务器密码
 DEFAULT_PUBLICITY=初始是否公开
 DEFAULT_LANGUAGE=初始语言
-DEFAULT_OWNER_STEAMNAME=初始房主的Steam显示名称
-DEFAULT_OWNER_STEAMID=初始房主的Steam ID
-FORCE_SERVERNAME=更改服务器名称
-FORCE_PASSWORD=更改服务器密码
-FORCE_PUBLICITY=更改是否公开
-FORCE_LANGUAGE=更改语言
-FORCE_OWNER_STEAMNAME=更改房主的Steam显示名称
-FORCE_OWNER_STEAMID=更改房主的Steam ID
+DEFAULT_OWNER_STEAMNAME=初始房主的Steam显示名称（必须结合下一条）
+DEFAULT_OWNER_STEAMID=初始房主的Steam ID（必须结合上一条）
+FORCE_SERVERNAME=强制更改服务器名称
+FORCE_PASSWORD=强制更改服务器密码
+FORCE_PUBLICITY=强制更改是否公开
+FORCE_LANGUAGE=强制更改语言
+FORCE_OWNER_STEAMNAME=强制更改房主的Steam显示名称（必须结合下一条）
+FORCE_OWNER_STEAMID=强制更改房主的Steam ID（必须结合上一条）
 ----
 
-* 各项设置间是独立的，除了房主信息要成对输入，其他设置有哪些就生效哪些
+* 各项设置间是独立的，不写（或留空）就不会更改
 * 启动脚本会检查设置文件是否已经存在，如果不存在，“初始”变量才会生效
-* “更改”的优先级要高于“初始”
-* 只要“更改”不为空，启动脚本就会写入设置文件。因此建议变更后用空的环境变量重新启动服务器
+* 只要“强制更改”的内容不为空，启动脚本就会写入设置文件。因此建议更改后，再重新启动一个不加环境变量的容器
 
 启动成功后，就可以正常进行原版游戏了。如果不需要 Mod 等，就不用往下看了。
 
@@ -281,10 +284,12 @@ FORCE_OWNER_STEAMID=更改房主的Steam ID
 
 ### 3. 再次启动，使设置生效
 
-和 `slim` 与 `preload` 不同， `dockerful` 在容器启动时并不查询新版本，因此启动很快。这里我们可以重启容器，也可以直接开一个新容器（注意删掉原来的）：
+和 `slim` 与 `preload` 不同， `dockerful` 在容器启动时并不查询新版本，因此启动很快。这里我们可以重启容器，也可以直接开一个新容器（并删掉原来的）：
 
 [source,sh]
 ----
+docker rm --force barotrauma-server-dockerful
+
 docker run \
   --name barotrauma-server-dockerful \
   -p 27015:27015/udp \
@@ -301,8 +306,8 @@ docker run \
 ----
 docker run \
   --name barotrauma-server-dockerful \
-  --env FORCE_SERVERNAME=AABBCC \
-  --env FORCE_PASSWORD=112233 \
+  --env FORCE_SERVERNAME=BBCCAA \
+  --env FORCE_PASSWORD=223344 \
   --env FORCE_PUBLICITY=true \
   --env FORCE_LANGUAGE="Simplified Chinese" \
   --env FORCE_OWNER_STEAMNAME="S0m3_b0dy" \
@@ -322,7 +327,7 @@ docker run \
 
  git clone https://github.com/YanWenKun/barotrauma-server-docker.git
 
-2. <<prepare-your-files,准备房间文件>>
+2. <<prepare-your-files,准备游戏房间文件>>
 
 3. 替换 link:preloads/[preloads/] 目录下的文件
 

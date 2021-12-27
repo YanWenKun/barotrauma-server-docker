@@ -1,5 +1,5 @@
 ############################################################
-# Example Dockerfile that contains a dedicated game server
+# Example Dockerfile that runs a dedicated game server
 # with SteamCMD.
 ############################################################
 
@@ -44,7 +44,7 @@ RUN set -eux \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
     && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
 
-# Mount whole game server folder as persistence.
+# Mount the whole game server folder as persistence.
 # Could be optimized if the game server is data-program separated, but needs redesign.
 VOLUME $GAMEDIR
 
