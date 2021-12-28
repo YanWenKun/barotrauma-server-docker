@@ -7,12 +7,19 @@ and https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley], with
 
 ## Quick Start
 
-See https://hub.docker.com/r/yanwk/barotrauma-server[Docker Hub Page].
+*See https://hub.docker.com/r/yanwk/barotrauma-server[Docker Hub Page].*
 
 ## Flavors
 
+### TL;DR
+
+* If you just want to start a vanilla game in 5 minutes, use <<how-to-run-dockerful-flavor,`dockerful`>>.
+* If you want a long running server with loads of mods, use `slim` and <<prepare-your-files,follow the steps>>.
+
+### Details
+
 *_Barotrauma Dedicated Server_* is basically a core subset of the game, without assets like images and sounds.
-The game is program-data-mixed, so is the Server, which brings more to consider when deploy in container-style.
+The game is program-data mixed, so is the Server, which brings more to consider when deploy in container-style.
 
 Most importantly, is whether you need Modding or not.
 
@@ -43,7 +50,7 @@ For different scenario, we have three flavors:
 [[prepare-your-files]]
 ## Before start: Prepare your files
 
-NOTE: If you choose `dockerful`, and have no mods/submarines/saves to upload, you can jump to <<how-to-run-dockerful-flavor>>.
+NOTE: If you choose `dockerful`, and have no mods/submarines/saves to upload, just jump to <<how-to-run-dockerful-flavor,Run dockerful>>.
 
 1. Run Barotrauma on **your computer**, enable all mods you want.
 2. Create a server, assume it's the dedicated server, set Server Name,
@@ -176,7 +183,7 @@ Also, if you need to update the server, just restart it.
 [[how-to-run-preload-flavor]]
 ## Guide: Run `preload`
 
-It's the same as <<how-to-run-slim-flavor,`slim`>>, just replace the image tag:
+Same as <<how-to-run-slim-flavor,`slim`>>, just replace the image tag:
 
 .A. Using `docker run`
 [source,sh]
@@ -193,14 +200,14 @@ docker run \
 [source,sh]
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
-docker compose --file docker-compose.preload.yml up
+docker compose --file docker-compose.dockerful.yml up
 ----
 
 
 [[how-to-run-dockerful-flavor]]
 ## Guide: Run `dockerful`
 
-### 1. Run the server with ENV variables
+### 1. Run server with ENV variables
 
 .A. Using `docker run`
 [source,sh]
@@ -231,9 +238,12 @@ git clone https://github.com/YanWenKun/barotrauma-server-docker.git
 docker compose --file docker-compose.preload.yml up
 ----
 
+The server is now good to go.
+Steps below are optional.
+
 ### 2. Upload your files (optional)
 
-Access your docker volume, there are four subfolders, upload to them accordingly:
+Access your docker volume, there are four subfolders. Upload to them accordingly:
 
 [cols=2]
 |=== 
@@ -249,12 +259,13 @@ Access your docker volume, there are four subfolders, upload to them accordingly
 |Multiplayer Campaign Save
 
 |submarines
-|Submarine Files (*.sub)
+|Your Submarine Files (*.sub)
 |=== 
 
 You may want to check <<prepare-your-files,file list>>.
 
-### 3. Restart the server (optional)
+[[restart-dockerful]]
+### 3. Restart server (optional)
 
 You need to restart the server for changes to take effect.
 
@@ -274,7 +285,7 @@ docker run \
 
 ### 4. Update server settings
 
-You can edit the settings files and restart, or with ENV variables:
+Just set ENV variables and start a new container:
 
 [source,sh]
 ----
@@ -296,7 +307,7 @@ docker run \
 
 If you use Docker Compose, just edit the Compose file.
 
-After you force-updated new settings, it's better start a new container (again) without ENV variables.
+After you force-updated new settings, it's better to <<restart-dockerful,start a new container (again) without ENV variables>> to avoid accidental overwrite in future.
 
 
 [[build-your-own]]

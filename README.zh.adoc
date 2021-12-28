@@ -5,9 +5,9 @@
 
 针对使用场景不同，分了三种风格，按需选择：
 
-* 一句话剧透
-** 如果你需要 5 分钟之内启动服务器，选 <<how-to-run-dockerful-flavor,`dockerful`>> ）
-** 如果你需要装一堆 Mod，进行一场漫长的游戏，选 <<how-to-run-slim-flavor,`slim`>>
+* 太长不看：
+** *如果你需要 5 分钟之内启动服务器，选 <<how-to-run-dockerful-flavor,`dockerful`>>*
+** *如果你需要装一堆 Mod，进行一场漫长的游戏，选 `slim` 并 <<prepare-your-files, 按照步骤>> 一步一步来*
 
 * <<how-to-run-slim-flavor,`slim`>> 走复古运维风格：
 ** 仅包含基本的运行环境，相当于一台刚安装了 Steam 的电脑
