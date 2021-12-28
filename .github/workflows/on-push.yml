@@ -3,6 +3,9 @@ name: Publish all tags to Docker Hub
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'README*'
+      - 'docs/**'
 
 jobs:
 
