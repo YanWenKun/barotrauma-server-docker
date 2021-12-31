@@ -113,4 +113,7 @@ VOLUME [ "${MOUNTPATH}" ]
 EXPOSE 27015/udp
 EXPOSE 27016/udp
 
-CMD [ "sh", "-c", "${ENTRYSCRIPT}" ]
+# Have to use root to chown uploaded files. But will run server in low-privilege.
+USER root:root
+CMD chown -R runner:runner "${MOUNTPATH}/" \
+    && su runner -c 'sh -c "${ENTRYSCRIPT}"'
