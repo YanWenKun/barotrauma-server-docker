@@ -1,5 +1,7 @@
 # Run Barotrauma Dedicated Server in Docker
 
+image::docs/submarine-whale.svg["Good Luck"]
+
 *link:README.zh.adoc[>> 中文文档 <<]*
 
 This repo is inspired by https://github.com/CM2Walki/steamcmd[CM2Walki] 
@@ -377,3 +379,15 @@ Check link:docs/Dockerfile.exmaple[Dockerfile.exmaple].
 * Try add deps, runtimes.
 * You can refer to link:Dockerfile.slim[Dockerfile.slim]
 and link:Dockerfile.preload[Dockerfile.preload].
+
+## Disclaimer
+
+link:docs/submarine-whale.svg[This image] is derived from
+https://www.maxpixel.net/Sperm-Whale-Valentines-Day-Wal-Heart-Blast-600387[here]
+and
+https://www.svgrepo.com/svg/193183/submarine[here]
+with
+https://creativecommons.org/publicdomain/zero/1.0/[CC0].
+
+Source code under
+link:LICENSE[MIT License].

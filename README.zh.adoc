@@ -1,5 +1,7 @@
 # 《潜渊症》独立服务器 Docker 镜像
 
+image::docs/submarine-whale.svg["Good Luck"]
+
 受 https://github.com/CM2Walki/steamcmd[CM2Walki] 
 与 https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley] 启发，但是换了个思路。
 
@@ -381,3 +383,14 @@ docker run \
   /bin/bash
 ----
 
+## 声明
+
+link:docs/submarine-whale.svg[该图片] 修改自
+https://www.maxpixel.net/Sperm-Whale-Valentines-Day-Wal-Heart-Blast-600387[图片]
+与
+https://www.svgrepo.com/svg/193183/submarine[图片]
+，皆为
+https://creativecommons.org/publicdomain/zero/1.0/[CC0 公共领域] 。
+
+代码使用
+link:LICENSE[MIT 协议] 。
