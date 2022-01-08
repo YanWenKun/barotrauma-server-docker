@@ -204,6 +204,7 @@ docker run \
 [source,sh]
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
+### 编辑 compose 文件... ###
 docker compose --file docker-compose.preload.yml up
 ----
 
@@ -240,7 +241,7 @@ docker run \
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
 ### 编辑 compose 文件... ###
-docker compose --file docker-compose.preload.yml up
+docker compose --file docker-compose.dockerful.yml up
 ----
 
 环境变量对应如下设置：

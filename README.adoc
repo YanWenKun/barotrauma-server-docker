@@ -202,7 +202,7 @@ docker run \
 [source,sh]
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
-docker compose --file docker-compose.dockerful.yml up
+docker compose --file docker-compose.preload.yml up
 ----
 
 
@@ -237,7 +237,7 @@ NOTE: STEAMNAME is your Steam displayed name, NOT your account.
 ----
 git clone https://github.com/YanWenKun/barotrauma-server-docker.git
 ### Edit Compose file... ###
-docker compose --file docker-compose.preload.yml up
+docker compose --file docker-compose.dockerful.yml up
 ----
 
 The server is now good to go.
