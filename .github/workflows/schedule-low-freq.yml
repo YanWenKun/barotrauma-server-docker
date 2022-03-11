@@ -2,8 +2,8 @@ name: Publish 'slim' and 'preload' to Docker Hub
 
 on:
   schedule:
-    # Run on every Wednesday 00:00 UTC
-    - cron: "00 0 * * 3"
+    # Run every month
+    - cron: "00 0 1 * *"
 
 jobs:
   build-publish:
