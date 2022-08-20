@@ -70,7 +70,7 @@ COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/c
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
 COPY --chown=runner:runner preloads/submarines/. "${GAMEDIR}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEDIR}/"
-COPY --chown=runner:runner preloads/mods/. "${GAMEDIR}/Mods/"
+COPY --chown=runner:runner preloads/mods/. "${GAMEDIR}/LocalMods/"
 
 VOLUME $GAMEDIR
 

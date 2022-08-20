@@ -77,7 +77,7 @@ WORKDIR ${GAMEPATH}
 # COPY server files from last stage
 COPY --from=stage1 --chown=runner:runner ${DLPATH} ${GAMEPATH}
 # Clear ExampleMod
-RUN rm -rf "${GAMEPATH}/Mods/*"
+RUN rm -rf "${GAMEPATH}/LocalMods/*"
 
 # Preload files from this git repository.
 # COPY from Windows will chmod 777, *nix respect original modes.
@@ -86,7 +86,7 @@ COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/c
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
 COPY --chown=runner:runner preloads/submarines/. "${GAMEPATH}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEPATH}/"
-COPY --chown=runner:runner preloads/mods/. "${GAMEPATH}/Mods/"
+COPY --chown=runner:runner preloads/mods/. "${GAMEPATH}/LocalMods/"
 
 COPY --chown=runner:runner resources/dockerful-entry.sh "${ENTRYSCRIPT}"
 COPY --chown=runner:runner resources/template_clientpermissions.xml ${SCRIPTPATH}/template_clientpermissions.xml
