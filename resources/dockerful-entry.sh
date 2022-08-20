@@ -124,15 +124,15 @@ ln -s "${MNT_KARMASETTG}" "${LC_KARMASETTG}"
 # Then delete and make symlink.
 mkdir -p "${GAMEPATH}/Submarines/Added/."
 
-cp -nR "${GAMEPATH}/Mods/."             "${MOUNTPATH}/mods/"
+cp -nR "${GAMEPATH}/LocalMods/."             "${MOUNTPATH}/mods/"
 cp -nR "${GAMEPATH}/Submarines/Added/." "${MOUNTPATH}/submarines"
 cp -nR "${SAVEPATH}/."                  "${MOUNTPATH}/multiplayer-saves"
 
-rm -rf "${GAMEPATH}/Mods"
+rm -rf "${GAMEPATH}/LocalMods"
 rm -rf "${GAMEPATH}/Submarines/Added"
 rm -rf "${SAVEPATH}"
 
-ln -sf "${MOUNTPATH}/mods"              "${GAMEPATH}/Mods"
+ln -sf "${MOUNTPATH}/mods"              "${GAMEPATH}/LocalMods"
 ln -sf "${MOUNTPATH}/submarines"        "${GAMEPATH}/Submarines/Added"
 ln -sf "${MOUNTPATH}/multiplayer-saves" "${SAVEPATH}"
 
