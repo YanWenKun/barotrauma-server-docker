@@ -36,6 +36,7 @@ RUN zypper --gpg-auto-import-keys \
 # so other low-privilege users could run it properly.
 # Clear /tmp when done.
 RUN steamcmd +'quit' \
+    && rm -rf /root/Steam/appcache/httpcache/* \ 
     && rm -rf /tmp/*
 
 # Install & run the game server in a low-privilege user.
