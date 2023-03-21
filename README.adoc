@@ -16,7 +16,7 @@ and https://github.com/gnoeley/barotrauma-dedicated-server-docker[gnoeley], with
 ### TL;DR
 
 * If you just want to start a vanilla game in 5 minutes, use <<how-to-run-dockerful-flavor,`dockerful`>>.
-* If you want a long running server with loads of mods, use `slim` and <<prepare-your-files,follow the steps>>.
+* If you want a long-running server with loads of mods, use `slim` and <<prepare-your-files,follow the steps>>.
 
 ### Details
 
@@ -43,7 +43,7 @@ For different scenario, we have three flavors:
 
 * <<how-to-run-dockerful-flavor,`dockerful`>> is "containerized" at best.
 ** No SteamCMD included. Won't check update when start (so **starts fast** and **won't stuck at connecting Steam**).
-** If the game updates, you'll need to run a new container with an up-to-date `yanwk/barotrauma-server:dockerful` image (this repo auto-builds every 3 hours).
+** If the game updates, you'll need to run a new container with an up-to-date `yanwk/barotrauma-server:dockerful` image (this repo auto-builds weekly).
 ** Certain files (including your **settings, mods, submarines and campaign saves**) are mounted to a docker volume for persistence.
 ** You can set Server Name, Server Password, Server Publicity and Admin's SteamID by setting ENV variables.
 ** **Will be a mess if Barotrauma makes a break change. So short-term game is preferred.**

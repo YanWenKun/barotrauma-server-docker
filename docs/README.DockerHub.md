@@ -8,12 +8,12 @@
 
 - [`dockerful`](https://github.com/YanWenKun/barotrauma-server-docker/blob/main/Dockerfile.dockerful)
 : No SteamCMD. Fast startup. Update via docker image.
-  - Runs server in a containerized style.
+  - Runs server in a 'containerized' style.
   - Suits for any quick game.
 - [`slim`](https://github.com/YanWenKun/barotrauma-server-docker/blob/main/Dockerfile.slim)
 : With SteamCMD. Install the server on first start. Update upon restart.
   - Recommended for long-running server.
-  - Safer way for customization.
+  - Safer way for customization/mods.
 - [`preload`](https://github.com/YanWenKun/barotrauma-server-docker/blob/main/Dockerfile.preload)
 : `slim` with server installed.
   - Use it only when `slim` is not working.
