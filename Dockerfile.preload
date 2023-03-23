@@ -67,8 +67,8 @@ RUN steamcmd \
 ARG SAVEDIR="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer"
 RUN mkdir -p "${SAVEDIR}"
 # COPY from Windows will chmod 777, *nix respect original modes.
-COPY --chown=runner:runner ["preloads/configs/serversettings.xml","preloads/configs/config_player.xml","${GAMEPATH}/"]
-COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/configs/karmasettings.xml","${GAMEPATH}/Data/"]
+COPY --chown=runner:runner ["preloads/configs/serversettings.xml","preloads/configs/config_player.xml","${GAMEDIR}/"]
+COPY --chown=runner:runner ["preloads/configs/clientpermissions.xml","preloads/configs/karmasettings.xml","${GAMEDIR}/Data/"]
 # These COPY instructions work in add/replace mode, and respect subfolder structure.
 COPY --chown=runner:runner preloads/submarines/. "${GAMEDIR}/Submarines/"
 COPY --chown=runner:runner preloads/multiplayer-saves/. "${SAVEDIR}/"
