@@ -1,0 +1,64 @@
+﻿<config
+  language="English"
+  verboselogging="false"
+  savedebugconsolelogs="false"
+  savepath=""
+  subeditorundobuffer="32"
+  maxautosaves="8"
+  autosaveintervalseconds="300"
+  subeditorbackground="#0D2545"
+  enablesplashscreen="true"
+  pauseonfocuslost="true"
+  aimassistamount="0.05"
+  enablemouselook="true"
+  showenemyhealthbars="ShowAll"
+  chatopen="true"
+  crewmenuopen="true"
+  showoffensiveserverprompt="true"
+  tutorialskipwarning="true"
+  corpsedespawndelay="600"
+  corpsespersubdespawnthreshold="5"
+  usedualmodesockets="true"
+  disableingamehints="false"
+  enablesubmarineautosave="true"
+  quickstartsub="">
+  <graphicssettings
+    width="0"
+    height="0"
+    vsync="true"
+    compresstextures="true"
+    framelimit="300"
+    displaymode="BorderlessWindowed"
+    particlelimit="1500"
+    specularity="true"
+    chromaticaberration="true"
+    losmode="Transparent"
+    hudscale="1"
+    inventoryscale="1"
+    lightmapscale="1"
+    visiblelightlimit="50"
+    textscale="1"
+    radialdistortion="true" />
+  <audio
+    musicvolume="0.3"
+    soundvolume="0.5"
+    uivolume="0.3"
+    voicechatvolume="0.5"
+    voicechatcutoffprevention="200"
+    microphonevolume="5"
+    muteonfocuslost="false"
+    dynamicrangecompressionenabled="true"
+    usedirectionalvoicechat="true"
+    voipattenuationenabled="true"
+    voicesetting="PushToTalk"
+    audiooutputdevice=""
+    voicecapturedevice=""
+    noisegatethreshold="0"
+    disablevoicechatfilters="false" />
+  <contentpackages>
+    <!--Vanilla-->
+    <corepackage
+      path="Content/ContentPackages/Vanilla.xml" />
+    <regularpackages />
+  </contentpackages>
+</config>
