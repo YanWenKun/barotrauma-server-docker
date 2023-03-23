@@ -32,12 +32,14 @@ docker run \
   --env DEFAULT_PUBLICITY=true \
   --env DEFAULT_LANGUAGE="English" \
   --env DEFAULT_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env DEFAULT_OWNER_STEAMID=5566778899 \
+  --env DEFAULT_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \
   yanwk/barotrauma-server:dockerful
 ```
+
+Note: You can check your SteamID via: https://steamid.io/
 
 **Updating:**
 
@@ -51,7 +53,7 @@ docker run \
   --env FORCE_PUBLICITY=true \
   --env FORCE_LANGUAGE="English" \
   --env FORCE_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env FORCE_OWNER_STEAMID=5566778899 \
+  --env FORCE_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \
@@ -87,7 +89,7 @@ docker run \
 - `Data/clientpermissions.xml`
 - `serversettings.xml`
 
-Tip: if you once started a server on your computer, just copy these files from it.
+Tip: If you once started a server on your computer, just copy these files from it.
 
 Note: The whole 'Barotrauma Dedicated Server' directory is mounted as a volume. You can edit it like your local game. The dedicated server is basically a core subset of the game.
 

@@ -227,11 +227,11 @@ docker run \
   yanwk/barotrauma-server:dockerful
 ----
 
-NOTE: STEAMNAME and STEAMID require to use in combination.
+* STEAMNAME is your Steam displayed name, NOT your account.
 
-NOTE: STEAMNAME is your Steam displayed name, NOT your account.
+* STEAMID can be found via: https://steamid.io/
 
-NOTE: You can check your SteamID via: https://steamid.io/
+* STEAMNAME and STEAMID should be used together.
 
 .B. Using `docker compose`
 [source,sh]
