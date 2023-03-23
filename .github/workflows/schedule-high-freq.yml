@@ -2,8 +2,8 @@ name: Publish 'dockerful' to Docker Hub
 
 on:
   schedule:
-    # # Run on every Monday and Friday 07:00 UTC
-    - cron: '00 7 * * 1,5'
+    # # Run on every Tuesday and Friday 07:00 UTC
+    - cron: '00 7 * * 2,5'
 
 jobs:
 

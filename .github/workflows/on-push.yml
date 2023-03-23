@@ -9,7 +9,7 @@ on:
 
 jobs:
 
-  build-publish:
+  build-publish-slim:
     environment: Publish to Docker Hub
     runs-on: ubuntu-latest
 
@@ -28,6 +28,30 @@ jobs:
           image: yanwk/barotrauma-server
           tags: slim
       - 
+        name: Push to Docker Hub
+        id: push-to-dockerhub
+        uses: redhat-actions/push-to-registry@v2
+        with: 
+          image: yanwk/barotrauma-server
+          tags: | 
+            ${{ steps.build-image-slim.outputs.tags }}
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+      - 
+        name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-dockerhub.outputs.registry-paths }}"
+
+
+  build-publish-preload:
+    environment: Publish to Docker Hub
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        name: Git checkout
+        uses: actions/checkout@v3
+      - 
         name: Build 'preload'
         id: build-image-preload
         uses: redhat-actions/buildah-build@v2
@@ -37,6 +61,30 @@ jobs:
           containerfiles: Dockerfile.preload
           image: yanwk/barotrauma-server
           tags: preload
+      - 
+        name: Push to Docker Hub
+        id: push-to-dockerhub
+        uses: redhat-actions/push-to-registry@v2
+        with: 
+          image: yanwk/barotrauma-server
+          tags: | 
+            ${{ steps.build-image-preload.outputs.tags }}
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+      - 
+        name: Print image url
+        run: echo "Image pushed to ${{ steps.push-to-dockerhub.outputs.registry-paths }}"
+
+
+  build-publish-dockerful:
+    environment: Publish to Docker Hub
+    runs-on: ubuntu-latest
+
+    steps:
+      - 
+        name: Git checkout
+        uses: actions/checkout@v3
       - 
         name: Build 'dockerful'
         id: build-image-dockerful
@@ -54,8 +102,6 @@ jobs:
         with: 
           image: yanwk/barotrauma-server
           tags: | 
-            ${{ steps.build-image-slim.outputs.tags }}
-            ${{ steps.build-image-preload.outputs.tags }}
             ${{ steps.build-image-dockerful.outputs.tags }}
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
