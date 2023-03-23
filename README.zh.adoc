@@ -107,15 +107,14 @@ image::docs/submarine-whale.svg["Good Luck"]
 [source,xml]
 ----
   <contentpackages>
-    <core
-      name="Vanilla 0.9" />
-    <regular>
+    <corepackage
+      path="Content/ContentPackages/Vanilla.xml" />
+    <regularpackages>
       <package
-        name="Holiday Oceanic"
-        enabled="true" />
+        path="LocalMods/MyMod1/filelist.xml" />
       <package
-        name="Dayu" />
-    </regular>
+        path="LocalMods/MyMod2/filelist.xml" />
+    </regularpackages>
   </contentpackages>
 ----
 
@@ -229,7 +228,7 @@ docker run \
   --env DEFAULT_PUBLICITY=true \
   --env DEFAULT_LANGUAGE="Simplified Chinese" \
   --env DEFAULT_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env DEFAULT_OWNER_STEAMID=5566778899 \
+  --env DEFAULT_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \
@@ -259,6 +258,8 @@ FORCE_LANGUAGE=强制更改语言
 FORCE_OWNER_STEAMNAME=强制更改房主的Steam显示名称（必须结合下一条）
 FORCE_OWNER_STEAMID=强制更改房主的Steam ID（必须结合上一条）
 ----
+
+NOTE: SteamID 可以在这里查找： https://steamid.io/
 
 * 各项设置间是独立的，不写（或留空）就不会更改
 * 启动脚本会检查设置文件是否已经存在，如果不存在，“初始”变量才会生效
@@ -314,7 +315,7 @@ docker run \
   --env FORCE_PUBLICITY=true \
   --env FORCE_LANGUAGE="Simplified Chinese" \
   --env FORCE_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env FORCE_OWNER_STEAMID=5566778899 \
+  --env FORCE_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \

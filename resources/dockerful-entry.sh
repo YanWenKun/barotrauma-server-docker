@@ -59,7 +59,7 @@ if [ ! -f "${MNT_SERVERSETT}" ] ; then
     fi ;
     if [ -n "${DEFAULT_PUBLICITY}" ] ; then
         echo "DEFAULT_PUBLICITY is set, server publicity will be ${DEFAULT_PUBLICITY}."
-        sed -i "s/public=.*/public=\"${DEFAULT_PUBLICITY}\"/" "${MNT_SERVERSETT}"
+        sed -i "s/IsPublic=.*/IsPublic=\"${DEFAULT_PUBLICITY}\"/" "${MNT_SERVERSETT}"
     fi ;
 fi ;
 
@@ -73,7 +73,7 @@ if [ -n "${FORCE_PASSWORD}" ] ; then
 fi ;
 if [ -n "${FORCE_PUBLICITY}" ] ; then
     echo "FORCE_PUBLICITY is set, server publicity will be ${FORCE_PUBLICITY}."
-    sed -i "s/public=.*/public=\"${FORCE_PUBLICITY}\"/" "${MNT_SERVERSETT}"
+    sed -i "s/IsPublic=.*/IsPublic=\"${FORCE_PUBLICITY}\"/" "${MNT_SERVERSETT}"
 fi ;
 
 ##############################
@@ -85,7 +85,7 @@ if [ ! -f "${MNT_CLIENTPERM}" ] ; then
         echo "DEFAULT_OWNER_STEAMNAME and DEFAULT_OWNER_STEAMID are both set, changing in-game server admin."
         cp "${TMPL_CLIENTPERM}" "${MNT_CLIENTPERM}"
         sed -i "s/name=BARO_OWNER_STEAMNAME/name=\"${DEFAULT_OWNER_STEAMNAME}\"/"   "${MNT_CLIENTPERM}"
-        sed -i "s/steamid=BARO_OWNER_STEAMID/steamid=\"${DEFAULT_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"
+        sed -i "s/accountid=BARO_OWNER_STEAMID/accountid=\"${DEFAULT_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"
     else 
         cp "${LC_CLIENTPERM}" "${MNT_CLIENTPERM}"
     fi ;
@@ -95,7 +95,7 @@ if [ -n "${FORCE_OWNER_STEAMNAME}" ] && [ -n "${FORCE_OWNER_STEAMID}" ] ; then
     echo "FORCE_OWNER_STEAMNAME and FORCE_OWNER_STEAMID are both set, changing in-game server admin."
     cp "${TMPL_CLIENTPERM}" "${MNT_CLIENTPERM}"
     sed -i "s/name=BARO_OWNER_STEAMNAME/name=\"${FORCE_OWNER_STEAMNAME}\"/"   "${MNT_CLIENTPERM}"
-    sed -i "s/steamid=BARO_OWNER_STEAMID/steamid=\"${FORCE_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"
+    sed -i "s/accountid=BARO_OWNER_STEAMID/accountid=\"${FORCE_OWNER_STEAMID}\"/" "${MNT_CLIENTPERM}"
 fi
 
 ##############################

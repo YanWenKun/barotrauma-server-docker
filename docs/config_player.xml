@@ -1,30 +1,20 @@
 ﻿<config
-  gameversion="0.15.22.0"
   language="Simplified Chinese"
-  masterserverurl="http://www.undertowgames.com/baromaster"
-  autocheckupdates="true"
-  musicvolume="0.3"
-  soundvolume="0.5"
   verboselogging="false"
   savedebugconsolelogs="false"
-  submarineautosave="true"
   subeditorundobuffer="32"
   maxautosaves="8"
   autosaveintervalseconds="300"
-  subeditorbackground="13,37,69,255"
   enablesplashscreen="true"
-  usesteammatchmaking="true"
-  quickstartsub="Humpback"
-  requiresteamauthentication="true"
-  autoupdateworkshopitems="true"
+  enablesubmarineautosave="true"
+  quickstartsub=""
   pauseonfocuslost="true"
-  aimassistamount="0.5"
+  aimassistamount="0.05"
   enablemouselook="true"
-  radialdistortion="true"
+  showenemyhealthbars="ShowAll"
   chatopen="true"
   crewmenuopen="true"
-  campaigndisclaimershown="false"
-  editordisclaimershown="false"
+  showoffensiveserverprompt="true"
   tutorialskipwarning="true"
   corpsedespawndelay="600"
   corpsespersubdespawnthreshold="5"
@@ -35,49 +25,40 @@
   <audio
     musicvolume="0.3"
     soundvolume="0.5"
+    uivolume="0.3"
     voicechatvolume="0.5"
-    voicechatcutoffprevention="0"
+    voicechatcutoffprevention="200"
     microphonevolume="5"
     muteonfocuslost="false"
     dynamicrangecompressionenabled="true"
-    voipattenuationenabled="true"
     usedirectionalvoicechat="true"
-    voicesetting="Disabled"
+    voipattenuationenabled="true"
+    voicesetting="PushToTalk"
     audiooutputdevice=""
     voicecapturedevice=""
-    noisegatethreshold="-45"
-    uselocalvoicebydefault="false" />
+    noisegatethreshold="0"
+    disablevoicechatfilters="false" />
   <graphicssettings
+    width="0"
+    height="0"
+    vsync="true"
+    compresstextures="true"
+    framelimit="300"
+    displaymode="BorderlessWindowed"
     particlelimit="1500"
-    lightmapscale="1"
+    specularity="true"
     chromaticaberration="true"
     losmode="Transparent"
     hudscale="1"
     inventoryscale="1"
-    textscale="1" />
+    lightmapscale="1"
+    visiblelightlimit="50"
+    textscale="1"
+    radialdistortion="true" />
   <contentpackages>
-    <core
-      name="Vanilla 0.9" />
-    <regular />
+    <!--Vanilla-->
+    <corepackage
+      path="Content/ContentPackages/Vanilla.xml" />
+    <regularpackages />
   </contentpackages>
-  <gameplay>
-    <jobpreferences />
-  </gameplay>
-  <player
-    name=""
-    headindex="1"
-    hairindex="-1"
-    beardindex="-1"
-    moustacheindex="-1"
-    faceattachmentindex="-1"
-    skincolor="0,0,0,255"
-    haircolor="0,0,0,255"
-    facialhaircolor="0,0,0,255" />
-  <tutorials />
-  <ignoredhints
-    identifiers="" />
-  <encountered
-    creatures="" />
-  <killed
-    creatures="" />
 </config>

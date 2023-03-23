@@ -105,15 +105,14 @@ and mods settings:
 [source,xml]
 ----
   <contentpackages>
-    <core
-      name="Vanilla 0.9" />
-    <regular>
+    <corepackage
+      path="Content/ContentPackages/Vanilla.xml" />
+    <regularpackages>
       <package
-        name="Holiday Oceanic"
-        enabled="true" />
+        path="LocalMods/MyMod1/filelist.xml" />
       <package
-        name="Dayu" />
-    </regular>
+        path="LocalMods/MyMod2/filelist.xml" />
+    </regularpackages>
   </contentpackages>
 ----
 
@@ -221,7 +220,7 @@ docker run \
   --env DEFAULT_PUBLICITY=true \
   --env DEFAULT_LANGUAGE="English" \
   --env DEFAULT_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env DEFAULT_OWNER_STEAMID=5566778899 \
+  --env DEFAULT_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \
@@ -231,6 +230,8 @@ docker run \
 NOTE: STEAMNAME and STEAMID require to use in combination.
 
 NOTE: STEAMNAME is your Steam displayed name, NOT your account.
+
+NOTE: You can check your SteamID via: https://steamid.io/
 
 .B. Using `docker compose`
 [source,sh]
@@ -300,7 +301,7 @@ docker run \
   --env FORCE_PUBLICITY=true \
   --env FORCE_LANGUAGE="English" \
   --env FORCE_OWNER_STEAMNAME="S0m3_b0dy" \
-  --env FORCE_OWNER_STEAMID=5566778899 \
+  --env FORCE_OWNER_STEAMID="STEAM_1:1:123456789" \
   -p 27015:27015/udp \
   -p 27016:27016/udp \
   -v "baro-data:/persistence" \
