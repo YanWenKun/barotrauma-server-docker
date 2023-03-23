@@ -18,7 +18,8 @@ LABEL maintainer="code@yanwk.fun"
 # 3. Disable all Zypper repos.
 # 4. Run SteamCMD for the first time, let it update.
 # 5. Clear /tmp when done.
-RUN set -eux \
+RUN --mount=type=cache,target=/var/cache/zypp \
+    set -eux \
     && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
     && mkdir -p /home/runner \
     && groupadd runner \
@@ -35,7 +36,7 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc\n" \
     && zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
            libicu \
-           dotnet-runtime-3.1 \
+           dotnet-runtime-6.0 \
            libSDL2-2_0-0 \
            steamcmd \
     && zypper modifyrepo --disable --all \
@@ -43,7 +44,7 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc\n" \
     && rm -rf /root/Steam/appcache/httpcache/* \ 
     && rm -rf /tmp/*
 
-# Install & run the game server in a low-privilege user.
+# The game server will be installed & running in a low-privilege user.
 USER runner:runner
 
 ENV STEAMAPPID=1026340

@@ -24,10 +24,11 @@ RUN set -eux \
 # When done, disable all Zypper repos.
 COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
 
-RUN zypper --gpg-auto-import-keys \
+RUN --mount=type=cache,target=/var/cache/zypp \
+    zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
            libicu \
-           dotnet-runtime-3.1 \
+           dotnet-runtime-6.0 \
            libSDL2-2_0-0 \
            steamcmd \
     && zypper modifyrepo --disable --all
