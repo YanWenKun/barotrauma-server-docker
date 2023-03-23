@@ -67,11 +67,14 @@ WORKDIR $GAMEDIR
 
 EXPOSE 27015/udp 27016/udp
 
+# Update SteamCMD on every start.
 # If the executable file doesn't exist, SteamCMD will download, install and validate the server.
 # If exists, SteamCMD will try to update the server, but without validation (or config files will be replaced).
 # Have to use root to chown uploaded files. But will run server in low-privilege.
 USER root:root
-CMD chown -R runner:runner "${GAMEDIR}/" \
+CMD steamcmd +'quit' \
+    && rm -rf /tmp/dumps \
+    && chown -R runner:runner "${GAMEDIR}/" \
     && su runner -c '\
         if [ -f "${GAMEDIR}/DedicatedServer" ] ; then \
             steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \

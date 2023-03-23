@@ -80,10 +80,13 @@ WORKDIR $GAMEDIR
 EXPOSE 27015/udp
 EXPOSE 27016/udp
 
+# On every start, update SteamCMD.
 # On every start, update the game server from Steam, but without validation (or config files will be replaced).
 # Have to use root to chown uploaded files. But will run server in low-privilege.
 USER root:root
-CMD chown -R runner:runner "${GAMEDIR}/" \
+CMD steamcmd +'quit' \
+    && rm -rf /tmp/dumps \
+    && chown -R runner:runner "${GAMEDIR}/" \
     && su runner -c '\
         steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' \
         && "${GAMEDIR}/DedicatedServer"\
