@@ -18,8 +18,7 @@ LABEL maintainer="code@yanwk.fun"
 # 3. Disable all Zypper repos.
 # 4. Run SteamCMD for the first time, let it update.
 # 5. Clear /tmp when done.
-RUN --mount=type=cache,target=/var/cache/zypp \
-    set -eux \
+RUN set -eux \
     && sed -i 's/^CREATE_MAIL_SPOOL=yes/CREATE_MAIL_SPOOL=no/' /etc/default/useradd \
     && mkdir -p /home/runner \
     && groupadd runner \
@@ -40,6 +39,7 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc\n" \
            libSDL2-2_0-0 \
            steamcmd \
     && zypper modifyrepo --disable --all \
+    && rm -rf /var/cache/zypp/* \
     && steamcmd +'quit' \
     && rm -rf /root/Steam/appcache/httpcache/* \ 
     && rm -rf /tmp/*

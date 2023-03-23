@@ -10,8 +10,7 @@ LABEL maintainer="code@yanwk.fun"
 
 # Install SteamCMD.
 # When done, disable all Zypper repos.
-RUN --mount=type=cache,target=/var/cache/zypp \
-    zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
+RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
         steamcmd \
     && zypper modifyrepo --disable --all
 
@@ -48,13 +47,13 @@ LABEL maintainer="code@yanwk.fun"
 # When done, disable all Zypper repos.
 COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
 
-RUN --mount=type=cache,target=/var/cache/zypp \
-    zypper --gpg-auto-import-keys \
+RUN zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
             libSDL2-2_0-0 \
             libicu \
             dotnet-runtime-6.0 \
-    && zypper modifyrepo --disable --all
+    && zypper modifyrepo --disable --all \
+    && rm -rf /var/cache/zypp/*
 
 ARG DLPATH=/download
 

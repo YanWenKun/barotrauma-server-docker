@@ -12,12 +12,14 @@ LABEL maintainer="code@yanwk.fun"
 RUN zypper install --no-confirm --no-recommends --auto-agree-with-licenses \
         libSDL2-2_0-0 \
         steamcmd \
-    && zypper modifyrepo --disable --all
+    && zypper modifyrepo --disable --all \
+    && rm -rf /var/cache/zypp/*
 
 # Run SteamCMD for the first time, let it update & install some files,
 # so other low-privilege users could run it properly.
 # Clear /tmp when done.
 RUN steamcmd +'quit' \
+    && rm -rf /root/Steam/appcache/httpcache/* \ 
     && rm -rf /tmp/*
 
 # Create a low-privilege user.

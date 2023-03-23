@@ -24,14 +24,14 @@ RUN set -eux \
 # When done, disable all Zypper repos.
 COPY resources/microsoft-prod.repo /etc/zypp/repos.d/microsoft-prod.repo
 
-RUN --mount=type=cache,target=/var/cache/zypp \
-    zypper --gpg-auto-import-keys \
+RUN zypper --gpg-auto-import-keys \
         install --no-confirm --no-recommends --auto-agree-with-licenses \
            libicu \
            dotnet-runtime-6.0 \
            libSDL2-2_0-0 \
            steamcmd \
-    && zypper modifyrepo --disable --all
+    && zypper modifyrepo --disable --all \
+    && rm -rf /var/cache/zypp/*
 
 # Run SteamCMD for the first time, let it update & install some files,
 # so other low-privilege users could run it properly.
