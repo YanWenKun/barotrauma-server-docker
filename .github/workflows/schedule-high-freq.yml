@@ -2,8 +2,8 @@ name: Publish 'dockerful' to Docker Hub
 
 on:
   schedule:
-    # # Run on every Friday 00:00 UTC
-    - cron: '00 0 * * 5'
+    # # Run on every Monday and Friday 07:00 UTC
+    - cron: '00 7 * * 1,5'
 
 jobs:
 
@@ -14,7 +14,7 @@ jobs:
     steps:
       - 
         name: Git checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - 
         name: Build 'dockerful'
         id: build-image-dockerful
