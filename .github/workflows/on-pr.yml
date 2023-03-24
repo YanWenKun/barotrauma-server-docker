@@ -20,3 +20,4 @@ jobs:
           Dockerfile.slim
           Dockerfile.preload
           Dockerfile.dockerful
+        image: yanwk/barotrauma-server
