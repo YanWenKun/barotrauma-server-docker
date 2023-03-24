@@ -49,13 +49,15 @@ USER runner:runner
 
 ENV STEAMAPPID=1026340
 ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
+
 # This env is a fix for this issue: https://github.com/Regalis11/Barotrauma/issues/10112
 # This error about Barotrauma only happen on linux!
 ENV FIX_PATH="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma"
-ENV FIX_LINKPATH="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Daedalic Entertainment GmbH/Barotrauma"
+ENV FIX_LINKPATH="${FIX_PATH}/Daedalic Entertainment GmbH/Barotrauma"
 
 # 1. Symlink lib for the game server to access Steam service.
 # 2. Make direcotry for saving multiplayer campaigns.
+# 3. Make symlink for fixing nested folder issue mentioned above.
 # Note: if "~/.local/share/" doesn't exists, the game will try save campaigns inside main folder.
 # So we save all files in one place.
 RUN set -eux \
@@ -65,6 +67,7 @@ RUN set -eux \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
     && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so \
     && mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" \
+    && mkdir -p "${FIX_PATH}/Daedalic Entertainment GmbH" \
     && ln -s "${FIX_PATH}" "${FIX_LINKPATH}"
 
 VOLUME $GAMEDIR
