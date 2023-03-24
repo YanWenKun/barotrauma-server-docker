@@ -65,10 +65,7 @@ RUN set -eux \
     && mkdir -p /home/runner/.steam/sdk32 \
     && mkdir -p /home/runner/.steam/sdk64 \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
-    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so \
-    && mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" \
-    && mkdir -p "${FIX_PATH}/Daedalic Entertainment GmbH" \
-    && ln -s "${FIX_PATH}" "${FIX_LINKPATH}"
+    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
 
 VOLUME $GAMEDIR
 
@@ -89,6 +86,13 @@ CMD steamcmd +'quit' \
             steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} +'quit' ; \
         else \
             steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \
+        fi \
+        && if [ ! -f "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" ] ; then \
+            mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" ; \
+        fi \
+        && if [ ! -f "${FIX_PATH}/Daedalic Entertainment GmbH" ] ; then \
+            mkdir -p "${FIX_PATH}/Daedalic Entertainment GmbH" ; \
+            ln -s "${FIX_PATH}" "${FIX_LINKPATH}" ; \
         fi \
         && "${GAMEDIR}/DedicatedServer"\
     '
