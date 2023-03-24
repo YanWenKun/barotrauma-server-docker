@@ -50,14 +50,8 @@ USER runner:runner
 ENV STEAMAPPID=1026340
 ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
-# This env is a fix for this issue: https://github.com/Regalis11/Barotrauma/issues/10112
-# This error about Barotrauma only happen on linux!
-ENV FIX_PATH="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma"
-ENV FIX_LINKPATH="${FIX_PATH}/Daedalic Entertainment GmbH/Barotrauma"
-
 # 1. Symlink lib for the game server to access Steam service.
 # 2. Make direcotry for saving multiplayer campaigns.
-# 3. Make symlink for fixing nested folder issue mentioned above.
 # Note: if "~/.local/share/" doesn't exists, the game will try save campaigns inside main folder.
 # So we save all files in one place.
 RUN set -eux \
@@ -65,19 +59,24 @@ RUN set -eux \
     && mkdir -p /home/runner/.steam/sdk32 \
     && mkdir -p /home/runner/.steam/sdk64 \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
-    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so
+    && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so \
+    && mkdir -p "${GAMEDIR}"
 
+# Fix for: https://github.com/Regalis11/Barotrauma/issues/10112
+# (only occurs on Linux)
+ENV FIX_PATH="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma"
+ENV FIX_LINKPATH="${FIX_PATH}/Daedalic Entertainment GmbH/Barotrauma"
+
+# 1. Update SteamCMD on every start.
+# 2. Use root to chown uploaded files. But will run server in low-privilege.
+# 3. If the executable file "DedicatedServer" doesn't exist, SteamCMD will download, install and validate the server.
+#    If exists, SteamCMD will try to update the server, but will not validate (or config files will be replaced).
+# 4. Make symlink for fixing nested folder issue mentioned above.
+USER root:root
 VOLUME $GAMEDIR
-
 WORKDIR $GAMEDIR
-
 EXPOSE 27015/udp 27016/udp
 
-# Update SteamCMD on every start.
-# If the executable file doesn't exist, SteamCMD will download, install and validate the server.
-# If exists, SteamCMD will try to update the server, but without validation (or config files will be replaced).
-# Have to use root to chown uploaded files. But will run server in low-privilege.
-USER root:root
 CMD steamcmd +'quit' \
     && rm -rf /tmp/dumps \
     && chown -R runner:runner "${GAMEDIR}/" \
@@ -87,11 +86,9 @@ CMD steamcmd +'quit' \
         else \
             steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' ; \
         fi \
-        && if [ ! -f "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" ] ; then \
-            mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" ; \
-        fi \
-        && if [ ! -f "${FIX_PATH}/Daedalic Entertainment GmbH" ] ; then \
-            mkdir -p "${FIX_PATH}/Daedalic Entertainment GmbH" ; \
+        && mkdir -p "${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma/Multiplayer" \
+        && mkdir -p "${FIX_PATH}/Daedalic Entertainment GmbH" \
+        && if [ ! -L "${FIX_LINKPATH}" ] ; then \
             ln -s "${FIX_PATH}" "${FIX_LINKPATH}" ; \
         fi \
         && "${GAMEDIR}/DedicatedServer"\
