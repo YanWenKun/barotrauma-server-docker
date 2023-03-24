@@ -1,6 +1,7 @@
 name: Test-build Docker Image
 
 on:
+  workflow_dispatch: # Can be manually triggered
   pull_request:
     branches: [ main ]
 
