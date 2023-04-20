@@ -79,7 +79,7 @@ Addtionally, you may want to copy:
  Submarines/MY-SUPER-DUPER-POWERSUB.sub
 
 .Mods folder
- Mods/
+ LocalMods/
 
 .Multiplayer campaign saves
 ----
@@ -256,7 +256,7 @@ Access your docker volume, there are four subfolders. Upload to them accordingly
 |Server Settings
 
 |mods
-|Same as Mods/ Folder
+|Same as LocalMods/ Folder
 
 |multiplayer-saves
 |Multiplayer Campaign Save
@@ -319,7 +319,7 @@ After you force-updated new settings, it's better to <<restart-dockerful,start a
 In this ultimate way, you build your own docker image pre-loaded with all settings, mods, submarines and saves.
 This could be useful if you don't have access to your container's volume. But you still need to find a way to backup your saves.
 
-NOTE: Update files in docker image won't affect volume. If you need to update mods on server frequently, you may want to edit Dockerfile.preload or Dockerfile.dockerful to meet your own needs (Focus on config_player.xml and Mods/ ).
+NOTE: Update files in docker image won't affect volume. If you need to update mods on server frequently, you may want to edit Dockerfile.preload or Dockerfile.dockerful to meet your own needs (Focus on config_player.xml and LocalMods/ ).
 
 1. Clone this repo
 

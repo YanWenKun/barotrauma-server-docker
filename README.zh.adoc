@@ -25,7 +25,7 @@ image::docs/submarine-whale.svg["Good Luck"]
 ** 没有 SteamCMD，版本更新依靠 Docker 镜像更新
 ** 对需要持久化存储的游戏房间文件做了单独的映射
 ** 支持使用容器的环境变量来设置服务器名称、密码、房主、是否公开
-** 支持像 `preload` 一样提前把游戏房间文件 <<build-your-own,打包到镜像中>> ，但是每次启动时会尝试复制这些文件到持久化存储（不覆盖），可能会造成 Mods 文件夹混乱。
+** 支持像 `preload` 一样提前把游戏房间文件 <<build-your-own,打包到镜像中>> ，但是每次启动时会尝试复制这些文件到持久化存储（不覆盖），可能会造成 LocalMods 文件夹混乱。
 
 ## 还是没理解？
 
@@ -75,7 +75,7 @@ image::docs/submarine-whale.svg["Good Luck"]
  config_player.xml
 
 .Mod文件夹
- Mods/
+ LocalMods/
 
 .潜艇文件
  Submarines/xxxx.sub
