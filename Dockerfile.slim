@@ -51,19 +51,21 @@ ENV STEAMAPPID=1026340
 ENV GAMEDIR="/home/runner/Steam/steamapps/common/Barotrauma Dedicated Server"
 
 # 1. Symlink lib for the game server to access Steam service.
-# 2. Make direcotry for saving multiplayer campaigns.
-# Note: if "~/.local/share/" doesn't exists, the game will try save campaigns inside main folder.
-# So we save all files in one place.
+# 2. Let SteamCMD download the game server for once, 
+#    so it won't validate(reset) existing files at first start (ugly hack).
 RUN set -eux \
     && mkdir -p /home/runner/Steam \
     && mkdir -p /home/runner/.steam/sdk32 \
     && mkdir -p /home/runner/.steam/sdk64 \
     && ln -s /usr/lib/steamcmd/linux32/steamclient.so /home/runner/.steam/sdk32/steamclient.so \
     && ln -s /usr/lib/steamcmd/linux64/steamclient.so /home/runner/.steam/sdk64/steamclient.so \
-    && mkdir -p "${GAMEDIR}"
+    && mkdir -p "${GAMEDIR}" \
+    && steamcmd @ShutdownOnFailedCommand @NoPromptForPassword +login anonymous +app_update ${STEAMAPPID} validate +'quit' \
+    && rm -rf "${GAMEDIR}/*"
 
-# Fix for: https://github.com/Regalis11/Barotrauma/issues/10112
-# (only occurs on Linux)
+# Fix for (only occurs on Linux): https://github.com/Regalis11/Barotrauma/issues/10112
+# Note: if "~/.local/share/" doesn't exists, the game will try save campaigns & Workshop mods inside main folder.
+#       So we save all files in one place.
 ENV FIX_PATH="${GAMEDIR}/Daedalic Entertainment GmbH/Barotrauma"
 ENV FIX_LINKPATH="${FIX_PATH}/Daedalic Entertainment GmbH/Barotrauma"
 
