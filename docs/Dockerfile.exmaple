@@ -3,7 +3,7 @@
 # with SteamCMD.
 ############################################################
 
-FROM opensuse/leap:15.5
+FROM opensuse/leap:15.6
 
 LABEL maintainer="code@yanwk.fun"
 

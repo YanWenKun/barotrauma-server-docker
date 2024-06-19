@@ -4,7 +4,7 @@
 # Stage 2: Put the server in a separate running environment.
 ################################################################################
 
-FROM opensuse/leap:15.5 AS stage1
+FROM opensuse/leap:15.6 AS stage1
 
 LABEL maintainer="code@yanwk.fun"
 
@@ -39,7 +39,7 @@ RUN set -eux \
 
 ################################################################################
 
-FROM opensuse/leap:15.5 AS stage2
+FROM opensuse/leap:15.6 AS stage2
 
 LABEL maintainer="code@yanwk.fun"
 
