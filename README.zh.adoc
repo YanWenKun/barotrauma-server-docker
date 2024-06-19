@@ -74,11 +74,8 @@ image::docs/submarine-whale.svg["Good Luck"]
 .玩家个性化设置，这里只需要其中的语言与Mod设置
  config_player.xml
 
-.Mod文件夹
+.Mod文件夹（包括潜艇文件）
  LocalMods/
-
-.潜艇文件
- Submarines/xxxx.sub
 
 .善恶值设置，如果没改就不用
  Data/karmasettings.xml
@@ -276,13 +273,11 @@ FORCE_OWNER_STEAMID=强制更改房主的Steam ID（必须结合上一条）
 |服务器设置文件
 
 |mods
-|Mod 文件
+|Mod 文件（包括潜艇文件）
 
 |multiplayer-saves
 |多人战役存档
 
-|submarines
-|潜艇文件
 |=== 
 
 ### 3. 再次启动，使设置生效

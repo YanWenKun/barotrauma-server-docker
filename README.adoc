@@ -75,10 +75,7 @@ NOTE: If you choose `dockerful`, and have no mods/submarines/saves to upload, ju
 
 Addtionally, you may want to copy:
 
-.Submarine files
- Submarines/MY-SUPER-DUPER-POWERSUB.sub
-
-.Mods folder
+.Mods folder (including Submarine files)
  LocalMods/
 
 .Multiplayer campaign saves
@@ -256,13 +253,11 @@ Access your docker volume, there are four subfolders. Upload to them accordingly
 |Server Settings
 
 |mods
-|Same as LocalMods/ Folder
+|Same as LocalMods/ Folder (including submarines)
 
 |multiplayer-saves
 |Multiplayer Campaign Save
 
-|submarines
-|Your Submarine Files (*.sub)
 |=== 
 
 You may want to check <<prepare-your-files,file list>>.
